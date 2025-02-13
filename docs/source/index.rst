@@ -11,7 +11,9 @@ HipoLBM Documentation
    :caption: HipoLBM
 
    pages/Introduction.rst
+   pages/Kernels.rst
    pages/BCs.rst
    pages/Examples.rst
+
 
 .. bibliography:: bibliography.bib

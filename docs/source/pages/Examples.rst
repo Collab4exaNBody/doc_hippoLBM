@@ -34,6 +34,7 @@ An external force of `(9.512485×10−5,0.0,0.0)` is applied to drive the flow. 
      - lbm_parameters:
         Fext: [9.512485e-05,0.000000e+00,0.000000e+00]
         nuth: 1e-3
+
 The global parameters for this simulation include output frequency and the total number of iterations:
 
 .. code-block:: yaml
