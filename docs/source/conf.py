@@ -36,6 +36,7 @@ source_suffix = {
     '.rst': 'restructuredtext',
 }
 
+mathjax3_config = {'chtml': {'displayAlign': 'left'}}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
