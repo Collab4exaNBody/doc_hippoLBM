@@ -12,5 +12,6 @@ HipoLBM Documentation
 
    pages/Introduction.rst
    pages/BCs.rst
+   pages/Examples.rst
 
 .. bibliography:: bibliography.bib
