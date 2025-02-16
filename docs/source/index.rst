@@ -14,6 +14,7 @@ HipoLBM Documentation
    pages/Kernels.rst
    pages/BCs.rst
    pages/Examples.rst
+   pages/Performance.rst
 
 
 .. bibliography:: bibliography.bib
