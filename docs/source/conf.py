@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'hipoLBM'
+project = 'hippoLBM'
 copyright = '2025 - 2025, Raphaël Prat, Lhassan Amarsid'
 author = 'Raphaël Prat, Lhassan Amarsid'
 

@@ -1,14 +1,14 @@
-#####################
-HipoLBM Documentation
-#####################
+######################
+HippoLBM Documentation
+######################
 
-.. _hipolbm:
+.. _hippolbm:
 
 .. toctree::
-   :name: hipolbm
+   :name: hippolbm
    :numbered:
    :maxdepth: 2      
-   :caption: HipoLBM
+   :caption: HippoLBM
 
    pages/Introduction.rst
    pages/Kernels.rst

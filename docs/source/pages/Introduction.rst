@@ -1,18 +1,18 @@
-HipoLBM Software
-================
+HippoLBM Software
+=================
 
-Overview of HipoLBM
-^^^^^^^^^^^^^^^^^^^
-
-TODO
-
-HipoLBM Capabilities
+Overview of HippoLBM
 ^^^^^^^^^^^^^^^^^^^^
 
 TODO
 
-Default Execution Graph With HipoLBM
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+HippoLBM Capabilities
+^^^^^^^^^^^^^^^^^^^^^
+
+TODO
+
+Default Execution Graph With HippoLBM
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 TODO
 

@@ -1,7 +1,7 @@
 Performance
 ===========
 
-In this section, we will highlight the current performance of the hipoLBM code on simple benchmarks. These results are bound to improve over time as we continue to optimize our products.
+In this section, we will highlight the current performance of the hippoLBM code on simple benchmarks. These results are bound to improve over time as we continue to optimize our products.
 
 LBM Poiseuille
 ^^^^^^^^^^^^^^
