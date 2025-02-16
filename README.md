@@ -1,4 +1,4 @@
-# README for hipoLBM
+# README for hippoLBM
 
 ## Get ExaNBody Documentation
 
