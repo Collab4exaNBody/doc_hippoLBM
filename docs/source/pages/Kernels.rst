@@ -48,6 +48,7 @@ The streaming step is divided into two parts (step1 and step2), and synchronizat
 - Operator name: ``streaming``
 - Description: TO DO
 - Parameters:
+
   - ``asynchrone``: The asynchrone option controls the execution style: when true, it allows asynchronous operations with overlapping computation and communication, improving parallel performance. When false, it runs synchronously, ensuring sequential execution of operations and data updates.
 
 

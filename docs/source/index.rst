@@ -1,8 +1,7 @@
-######################
-HippoLBM Documentation
-######################
 
-.. _hippolbm:
+.. image:: _static/logo_hippoLBM.png
+   :align: center
+
 
 .. toctree::
    :name: hippolbm
