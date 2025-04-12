@@ -77,15 +77,6 @@ Boundary conditions are applied on the Z axis. On the lower boundary (`neumann_z
      - neumann_z_l:
         U: [0.001,0,0]
 
-Global parameters for the simulation are defined, including the initial timestep and physical time, with the simulation set to run for 100 iterations.
-
-.. code-block:: yaml
-
-   global:
-   global:
-      simulation_paraview_freq: 100
-      simulation_end_iteration: 3000
-
 The expected results will show a linear velocity profile along the Z axis, where the velocity increases linearly from the stationary bottom boundary to the top boundary with a constant shear rate, characteristic of Couette flow.
 
 .. image:: ../_static/couette.gif
@@ -114,6 +105,7 @@ We set the Lattice Boltzmann parameters, with no external force applied (i.e., `
         nuth: 1e-4
 
 The boundary conditions for the simulation are defined as follows:
+
 - **Pre-streaming boundary conditions**: The `pre_bounce_back` and `cavity_z_l` conditions are set, with a velocity of `U = [0.0, 0.1, 0]` applied on the lower Z boundary.
 - **Post-streaming boundary condition**: The `post_bounce_back` condition is applied on the other boundaries.
 
@@ -127,16 +119,65 @@ The boundary conditions for the simulation are defined as follows:
    post_stream_bcs:
      - post_bounce_back
 
-Global parameters for the simulation are set, including the frequency for output data (`simulation_paraview_freq`) and the total number of iterations (`simulation_end_iteration`).
-
-.. code-block:: yaml
-
-   global:
-      simulation_paraview_freq: 50
-      simulation_end_iteration: 1000
-
 The expected results will show the development of a cavity flow pattern, where the fluid moves along the Z axis, influenced by the velocity set on the lower boundary. This is typical for cavity simulations, where the fluid is confined within a box.
 
 .. image:: ../_static/cavity.png
    :align: center
 
+Cavity Flow with Wall Obstacle
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This example simulates cavity flow using the Lattice Boltzmann Method (LBM) with a fixed obstacle (wall) in the middle of the domain. The domain resolution is 100×100×100, and non-periodic boundary conditions are enforced on all axes (XX, YY, and ZZ).
+
+.. code-block:: yaml
+
+   do_domain:
+     - domain:
+        bounds: [[0,0,0],[0.1,0.1,0.1]]
+        resolution: 100
+        periodic: [false, false, false]
+
+No external force is applied (`Fext = [0, 0, 0]`), and the kinematic viscosity is set to `1e-4`.
+
+.. code-block:: yaml
+
+   set_lbm_parameters:
+     - lbm_parameters:
+        Fext: [0.000000e+00,0.000000e+00,0.000000e+00]
+        nuth: 1e-4
+
+Boundary conditions are applied as follows:
+
+- **Pre-streaming**:
+
+  - `pre_bounce_back` applies bounce-back on walls.
+  - `cavity_z_l` sets a moving lid on the lower Z boundary with velocity `U = [0.1, 0.0, 0]`.
+  - `wall_bounce_back` enables bounce-back condition for the internal obstacle.
+
+- **Post-streaming**:
+
+  - `post_bounce_back` finalizes bounce-back conditions after streaming.
+
+.. code-block:: yaml
+
+   pre_stream_bcs:
+     - pre_bounce_back
+     - cavity_z_l:
+        U: [0.1, 0.0, 0]
+     - wall_bounce_back
+
+   post_stream_bcs:
+     - post_bounce_back
+
+An internal obstacle is defined using the `set_obstacles` field. A vertical wall is placed at the center of the domain, slightly offset in the X-direction, spanning from Z = 0 to Z = 0.08.
+
+.. code-block:: yaml
+
+   set_obstacles:
+     - set_wall:
+        bounds: [[0.048,0,0],[0.052,0.1,0.08]]
+
+The expected result is a modified cavity flow field with recirculation zones forming around the central wall obstacle, demonstrating how internal structures influence fluid dynamics in confined spaces.
+
+.. image:: ../_static/cavity_wall.gif
+   :align: center
