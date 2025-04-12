@@ -4,7 +4,6 @@ Examples
 LBM Poiseuille Flow
 ^^^^^^^^^^^^^^^^^^^
 
-
 We define the simulation domain for the Lattice Boltzmann Method (LBM). In this example, we choose a resolution of 30×30×30. Periodic boundary conditions are applied along the XX and YY axes, while the ZZ axis remains non-periodic.
 
 .. code-block:: yaml
@@ -48,3 +47,7 @@ The expected results should show the development of a fully developed Poiseuille
 .. image:: ../_static/lbmpoiseuille.gif
    :align: center
 
+
+
+LBM Poiseuille Flow
+^^^^^^^^^^^^^^^^^^^
