@@ -15,6 +15,7 @@ The density :math:`m0[idx]` is computed as the sum of the distribution function 
    m0[idx] = \rho = \sum_{i=0}^{Q-1} s_i
 
 Where:
+
 - :math:`s_i = pf(idx, i)` is the distribution function for lattice direction :math:`i`.
 
 Formula for `Velocity` ( array of 3D Vector `m1`)
@@ -27,6 +28,7 @@ The velocity components :math:`u_x`, :math:`u_y`, and :math:`u_z` are calculated
    u_x = \sum_{i=0}^{Q-1} s_i \cdot e_{x,i}, \quad u_y = \sum_{i=0}^{Q-1} s_i \cdot e_{y,i}, \quad u_z = \sum_{i=0}^{Q-1} s_i \cdot e_{z,i}
 
 Where:
+
 - :math:`s_i = pf(idx, i)` is the distribution function for lattice direction :math:`i`.
 - :math:`e_{x,i}, e_{y,i}, e_{z,i}` are the components of the lattice velocities for direction :math:`i`.
 
@@ -54,7 +56,6 @@ Yaml example:
 .. code-block:: yaml
 
   - macro_variables
-
 
 Collision BGK
 ^^^^^^^^^^^^^
