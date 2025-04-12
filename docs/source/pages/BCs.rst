@@ -125,3 +125,23 @@ Yaml example:
 
   pre_stream_bcs:
     - wall_bounce_back
+
+`Cavity`
+^^^^^^^^
+
+This boundary condition models a **moving wall**, such as the lid in a lid-driven cavity flow. It is implemented through momentum injection at fluid nodes adjacent to the boundary.
+
+FORMULA: ``TODO``
+
+- Operator Name: ``cavity_z_0`` or ``cavity_z_l``
+- Description:  This operator enforces a Cavity boundary condition at z = lz in an LBM simulation. The Cavity boundary condition ensures that the gradient of the distribution function follows a prescribed value.
+- Parameters:
+	- ``U``: Prescribed velocity at the boundary (z = lz or z = 0), enforcing the Cavity condition.
+
+Yaml example:
+
+.. code-block:: yaml
+
+  pre_stream_bcs:
+    - cavity_z_l:
+       U: [0.0, 0.1, 0]
