@@ -89,10 +89,39 @@ Neumann Z l
 
 Yaml example:
 
-
 .. code-block:: yaml
 
    boundary_conditions:
      - neumann_z_l:
         U: [0.001,0,0]
 
+Bounce Back
+^^^^^^^^^^^
+
+Wall / Surface conditions
+-------------------------
+
+The standard bounce-back boundary condition is used to enforce the no-slip condition at solid walls in Lattice Boltzmann Methods (LBM). It is implemented by reflecting the distribution functions at wall nodes back in the opposite direction.
+
+Let:
+
+- :math:`\mathbf{x}` be the position of a lattice node,
+- :math:`\mathbf{c}_i = (e_{x,i}, e_{y,i}, e_{z,i})` be the discrete velocity in direction :math:`i`,
+- :math:`\bar{i}` be the index of the opposite direction of :math:`i`,
+- :math:`f_i(\mathbf{x}, t)` be the distribution function in direction :math:`i` at node :math:`\mathbf{x}` and time :math:`t`.
+
+Then, for a node :math:`\mathbf{x}` marked as a wall, and for each direction :math:`i = 1, \dots, Q - 1`, the bounce-back condition is applied as:
+
+.. math::
+
+   f_i(\mathbf{x}, t + \delta t) = f_{\bar{i}}(\mathbf{x} + \mathbf{c}_i, t)
+
+- Operator Name: ``wall_bounce_back``
+- Description:The WallBounceBack class is described as part of the Lattice Boltzmann Method (LBM) implementation, specifically the wall bounce back steps.
+
+Yaml example:
+
+.. code-block:: yaml
+
+  pre_stream_bcs:
+    - wall_bounce_back
