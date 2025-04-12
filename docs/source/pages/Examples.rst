@@ -249,4 +249,74 @@ The goal of this setup is to observe how a **sharp pressure gradient** (from the
 .. image:: ../_static/pressure.gif
    :align: center
 
+Pressure-Driven Flow Through Complex Geometry
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This simulation demonstrates pressure-driven flow across a complex internal structure using the Lattice Boltzmann Method (LBM). The domain is discretized with a resolution of 400×400×400, offering fine detail of the flow field. Periodic boundary conditions are applied along the Y axis, and the X and Z axes remain non-periodic.
+
+.. code-block:: yaml
+
+   do_domain:
+     - domain:
+        bounds: [[0,0,0],[0.1,0.1,0.1]]
+        resolution: 400
+        periodic: [false, true, false]
+
+No external force is applied (`Fext = [0,0,0]`), and the kinematic viscosity is set to `1e-4`.
+
+.. code-block:: yaml
+
+   set_lbm_parameters:
+     - lbm_parameters:
+        Fext: [0,0,0]
+        nuth: 1e-4
+
+**Pre-streaming boundary conditions** include bounce-back on all walls and user-defined internal walls:
+
+.. code-block:: yaml
+
+   pre_stream_bcs:
+     - pre_bounce_back
+     - wall_bounce_back
+
+A **complex system of internal obstacles (walls)** is defined to create a tortuous path for the flow. These walls are strategically placed along the X axis to create narrow channels and mixing zones.
+
+.. code-block:: yaml
+
+   set_obstacles:
+     - set_wall:
+        bounds: [[0.024,0,0.06],[0.026,0.1,0.1]]
+     - set_wall:
+        bounds: [[0.024,0,0],[0.026,0.1,0.04]]
+     - set_wall:
+        bounds: [[0.034,0,0.025],[0.036,0.1,0.075]]
+     - set_wall:
+        bounds: [[0.049,0,0.06],[0.051,0.1,0.1]]
+     - set_wall:
+        bounds: [[0.049,0,0],[0.051,0.1,0.04]]
+     - set_wall:
+        bounds: [[0.068,0,0.0355],[0.072,0.1,0.065]]
+     - set_wall:
+        bounds: [[0.085,0,0.02],[0.1,0.1,0.03]]
+     - set_wall:
+        bounds: [[0.085,0,0.07],[0.1,0.1,0.08]]
+
+A **high-density initialization** is imposed on the far left of the domain using `init_distributions` with a `tmp_coeff` of 1.5. This sets up a large **pressure difference** that drives the fluid flow.
+
+.. code-block:: yaml
+
+   set_distributions:
+     - init_distributions:
+        tmp_coeff: 1.5
+        bounds: [[0,0,0], [0.024,1,1]]
+
+**Post-streaming bounce-back** is applied to maintain no-slip conditions at the boundaries:
+
+.. code-block:: yaml
+
+   post_stream_bcs:
+     - post_bounce_back
+
+.. image:: ../_static/pression.gif
+   :align: center
 
