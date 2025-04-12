@@ -181,3 +181,72 @@ The expected result is a modified cavity flow field with recirculation zones for
 
 .. image:: ../_static/cavity_wall.gif
    :align: center
+
+
+Pressure-Driven Flow
+^^^^^^^^^^^^^^^^^^^^
+
+This simulation demonstrates the effect of a strong pressure or density difference using the Lattice Boltzmann Method (LBM). The domain has a resolution of 100×100×100, with periodic boundary conditions along the Y axis, and closed boundaries in X and Z.
+
+.. code-block:: yaml
+
+   do_domain:
+     - domain:
+        bounds: [[0,0,0],[0.1,0.1,0.1]]
+        resolution: 100
+        periodic: [false, true, false]
+
+No external force is applied. The kinematic viscosity is set to `1e-4`.
+
+.. code-block:: yaml
+
+   set_lbm_parameters:
+     - lbm_parameters:
+        Fext: [0.000000e+00,0.000000e+00,0.000000e+00]
+        nuth: 1e-4
+
+The **pre-streaming boundary conditions** include:
+
+- `pre_bounce_back`: standard no-slip boundary on external walls.
+- `wall_bounce_back`: bounce-back for internal structures.
+
+.. code-block:: yaml
+
+   pre_stream_bcs:
+     - pre_bounce_back
+     - wall_bounce_back
+
+Two vertical **internal walls** are added near the center of the domain, one at the top and one at the bottom, leaving a gap in the middle. These walls obstruct flow and create more complex recirculation patterns.
+
+.. code-block:: yaml
+
+   set_obstacles:
+     - set_wall:
+        bounds: [[0.048,0,0.06],[0.052,0.1,0.1]]
+     - set_wall:
+        bounds: [[0.048,0,0],[0.052,0.1,0.04]]
+
+A high-density region is initialized on the left-hand side using `init_distributions` with a coefficient of `1.5`. This creates a **pressure difference** between the left and right sides of the domain, acting as the flow-driving mechanism.
+
+.. code-block:: yaml
+
+   set_distributions:
+     - init_distributions:
+        tmp_coeff: 1.5
+        bounds: [[0,0,0], [0.048,1,1]]
+
+The **post-streaming boundary condition** is the standard `post_bounce_back`.
+
+.. code-block:: yaml
+
+   post_stream_bcs:
+     - post_bounce_back
+
+
+The goal of this setup is to observe how a **sharp pressure gradient** (from the initialized distribution) drives flow across the domain.
+
+
+.. image:: ../_static/pressure.gif
+   :align: center
+
+
