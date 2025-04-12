@@ -1,8 +1,8 @@
 Examples
 ========
 
-LBM Poiseuille Flow
-^^^^^^^^^^^^^^^^^^^
+Poiseuille Flow
+^^^^^^^^^^^^^^^
 
 We define the simulation domain for the Lattice Boltzmann Method (LBM). In this example, we choose a resolution of 30×30×30. Periodic boundary conditions are applied along the XX and YY axes, while the ZZ axis remains non-periodic.
 
@@ -47,8 +47,8 @@ The expected results should show the development of a fully developed Poiseuille
 .. image:: ../_static/lbmpoiseuille.gif
    :align: center
 
-Couette Flow Simulation
-^^^^^^^^^^^^^^^^^^^^^^
+Couette Flow
+^^^^^^^^^^^^
 
 We define the simulation domain for the Couette flow using the Lattice Boltzmann Method (LBM). In this case, we set the resolution to 100×100×100, with periodic boundary conditions applied on the XX and YY axes, and non-periodic boundary on the ZZ axis.
 
@@ -90,3 +90,53 @@ The expected results will show a linear velocity profile along the Z axis, where
 
 .. image:: ../_static/couette.gif
    :align: center
+
+Cavity Flow
+^^^^^^^^^^^
+
+We define the simulation domain for the cavity flow using the Lattice Boltzmann Method (LBM). In this case, the resolution is set to 200×200×200, with non-periodic boundary conditions applied in all directions (XX, YY, and ZZ).
+
+.. code-block:: yaml
+
+   do_domain:
+     - domain:
+        bounds: [[0,0,0],[0.1,0.1,0.1]]
+        resolution: 200
+        periodic: [false, false, false]
+
+We set the Lattice Boltzmann parameters, with no external force applied (i.e., `Fext = [0, 0, 0]`) and a kinematic viscosity (`nuth`) of `1e-4`.
+
+.. code-block:: yaml
+
+   set_lbm_parameters:
+     - lbm_parameters:
+        Fext: [0.000000e+00,0.000000e+00,0.000000e+00]
+        nuth: 1e-4
+
+The boundary conditions for the simulation are defined as follows:
+- **Pre-streaming boundary conditions**: The `pre_bounce_back` and `cavity_z_l` conditions are set, with a velocity of `U = [0.0, 0.1, 0]` applied on the lower Z boundary.
+- **Post-streaming boundary condition**: The `post_bounce_back` condition is applied on the other boundaries.
+
+.. code-block:: yaml
+
+   pre_stream_bcs:
+     - pre_bounce_back
+     - cavity_z_l:
+        U: [0.0, 0.1, 0]
+
+   post_stream_bcs:
+     - post_bounce_back
+
+Global parameters for the simulation are set, including the frequency for output data (`simulation_paraview_freq`) and the total number of iterations (`simulation_end_iteration`).
+
+.. code-block:: yaml
+
+   global:
+      simulation_paraview_freq: 50
+      simulation_end_iteration: 1000
+
+The expected results will show the development of a cavity flow pattern, where the fluid moves along the Z axis, influenced by the velocity set on the lower boundary. This is typical for cavity simulations, where the fluid is confined within a box.
+
+.. image:: ../_static/cavity.gif
+   :align: center
+
