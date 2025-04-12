@@ -1,11 +1,10 @@
 Kernels
 =======
 
-
 Macro Variables
 ^^^^^^^^^^^^^^^
 
-Formula for `Density` (array `m0`)
+Formula for `Density` (array named `m0`)
 --------------------------
 
 The density :math:`m0[idx]` is computed as the sum of the distribution function values over all directions (from 0 to :math:`Q-1`):
@@ -18,7 +17,7 @@ Where:
 
 - :math:`s_i = pf(idx, i)` is the distribution function for lattice direction :math:`i`.
 
-Formula for `Velocity` ( array of 3D Vector `m1`)
+Formula for `Velocity` (array of 3D Vector named `m1`)
 -------------------------------------------------
 
 The velocity components :math:`u_x`, :math:`u_y`, and :math:`u_z` are calculated as the weighted sum of the distribution functions and the corresponding lattice velocity components :math:`e_{x,i}`, :math:`e_{y,i}`, and :math:`e_{z,i}`:
@@ -60,7 +59,7 @@ Yaml example:
 Collision BGK
 ^^^^^^^^^^^^^
 
-- Operator name: ``collision_bgk``
+- Operator name: ``bgk``
 - Description: This operator implements the Bhatnagar-Gross-Krook (BGK) collision model for the Lattice Boltzmann Method (LBM). This model assumes a single relaxation time approach  to approximate the collision process, driving the distribution functions toward equilibrium.
 - Parameters: No parameters but you need to define ``lbm_parameters``.
 - Formula:
@@ -79,7 +78,20 @@ Yaml example:
 
 .. code-block:: yaml
 
-  - collision_bgk
+  - bgk
+
+Collision MRT
+^^^^^^^^^^^^^
+
+- Operator name: ``mrt``
+- Description: This operator implements the MRT collision model for the Lattice Boltzmann Method (LBM). This model assumes a single relaxation time approach  to approximate the collision process, driving the distribution functions toward equilibrium.
+- Parameters: No parameters but you need to define ``lbm_parameters``.
+
+Yaml example:
+
+.. code-block:: yaml
+
+  - mrt
 
 Streaming
 ^^^^^^^^^
