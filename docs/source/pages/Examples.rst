@@ -137,6 +137,6 @@ Global parameters for the simulation are set, including the frequency for output
 
 The expected results will show the development of a cavity flow pattern, where the fluid moves along the Z axis, influenced by the velocity set on the lower boundary. This is typical for cavity simulations, where the fluid is confined within a box.
 
-.. image:: ../_static/cavity.gif
+.. image:: ../_static/cavity.png
    :align: center
 
