@@ -5,7 +5,7 @@ Macro Variables
 ^^^^^^^^^^^^^^^
 
 Formula for `Density` (array named `m0`)
---------------------------
+----------------------------------------
 
 The density :math:`m0[idx]` is computed as the sum of the distribution function values over all directions (from 0 to :math:`Q-1`):
 
@@ -18,7 +18,7 @@ Where:
 - :math:`s_i = pf(idx, i)` is the distribution function for lattice direction :math:`i`.
 
 Formula for `Velocity` (array of 3D Vector named `m1`)
--------------------------------------------------
+------------------------------------------------------
 
 The velocity components :math:`u_x`, :math:`u_y`, and :math:`u_z` are calculated as the weighted sum of the distribution functions and the corresponding lattice velocity components :math:`e_{x,i}`, :math:`e_{y,i}`, and :math:`e_{z,i}`:
 
