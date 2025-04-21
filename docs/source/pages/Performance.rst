@@ -78,7 +78,9 @@ Now we focus on the impact of MPI parallelization on the performance of the GPU 
 .. note::
 
   512³ = 134,217,728 
+
   1024³ = 1,073,741,824
+
   2048³ = 8,589,934,592
 
 
