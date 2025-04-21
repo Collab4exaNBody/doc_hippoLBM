@@ -75,8 +75,18 @@ Now we focus on the impact of MPI parallelization on the performance of the GPU 
 
 .. image:: ../_static/perf_couette_512_1024_2048_strong_scaling.png
 
+.. note::
+
+  512³ = 134,217,728 
+
+  1024³ = 1,073,741,824
+
+  2048³ = 8,589,934,592
+
+
 - MPI communications seem inexpensive for these domain sizes;
 - We have also see that the memory limits of the a100 GPUs (80GB) are reached for these examples, and that when this size is exceeded, the unified memory goes back and forth in the CPU RAM. This is why we skipped these points, as the simulation times were too long.
+- We also run this simulation with a domain size of 4096³ (or 68.7 billions) over 192 GPUs. MLUPS =  2.48e+05 or 248 BLUPS.
 
 To dig deeper, we'll look at the trace obtained via nsight-system and the roofline from nsigh-compute.
 
