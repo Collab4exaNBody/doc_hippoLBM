@@ -10,6 +10,7 @@
    :caption: HippoLBM
 
    pages/Introduction.rst
+   pages/Install.rst
    pages/Kernels.rst
    pages/BCs.rst
    pages/Examples.rst
