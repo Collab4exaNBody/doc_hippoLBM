@@ -10,9 +10,9 @@ We define the simulation domain for the Lattice Boltzmann Method (LBM). In this 
 
    do_domain:
      - domain:
-        bounds: [[0,0,0],[0.1,0.1,0.1]]
-        resolution: 30
-        periodic: [true, true, false]
+        bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
+        grid_dims: [ 30 , 30 , 30 ]
+        periodic:  [ true, true, false ]
 
 We apply two Neumann boundary conditions on the Z axis, (setting to `(ux = 0, uy = 0, uz = 0)`):
 
@@ -57,7 +57,7 @@ We define the simulation domain for the Couette flow using the Lattice Boltzmann
    do_domain:
      - domain:
         bounds: [[0,0,0],[0.1,0.1,0.1]]
-        resolution: 100
+        grid_dims: [ 100 , 100 , 100 ]
         periodic: [true, true, false]
 
 We set the Lattice Boltzmann parameters with a kinematic viscosity (`nuth`) of `1e-2` and no external force applied (i.e., `Fext = [0, 0, 0]`).
@@ -91,9 +91,9 @@ We define the simulation domain for the cavity flow using the Lattice Boltzmann 
 
    do_domain:
      - domain:
-        bounds: [[0,0,0],[0.1,0.1,0.1]]
-        resolution: 200
-        periodic: [false, false, false]
+        bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
+        grid_dims: [ 200 , 200 , 200 ]
+        periodic:  [ false, false, false ]
 
 We set the Lattice Boltzmann parameters, with no external force applied (i.e., `Fext = [0, 0, 0]`) and a kinematic viscosity (`nuth`) of `1e-4`.
 
@@ -133,9 +133,9 @@ This example simulates cavity flow using the Lattice Boltzmann Method (LBM) with
 
    do_domain:
      - domain:
-        bounds: [[0,0,0],[0.1,0.1,0.1]]
-        resolution: 100
-        periodic: [false, false, false]
+        bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
+        grid_dims: [ 100 , 100 , 100 ]
+        periodic:  [ false, false, false ]
 
 No external force is applied (`Fext = [0, 0, 0]`), and the kinematic viscosity is set to `1e-4`.
 
@@ -192,9 +192,9 @@ This simulation demonstrates the effect of a strong pressure or density differen
 
    do_domain:
      - domain:
-        bounds: [[0,0,0],[0.1,0.1,0.1]]
-        resolution: 100
-        periodic: [false, true, false]
+        bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
+        grid_dims: [ 100 , 100 , 100 ]
+        periodic:  [ false, true, false ]
 
 No external force is applied. The kinematic viscosity is set to `1e-4`.
 
@@ -258,9 +258,9 @@ This simulation demonstrates pressure-driven flow across a complex internal stru
 
    do_domain:
      - domain:
-        bounds: [[0,0,0],[0.1,0.1,0.1]]
-        resolution: 400
-        periodic: [false, true, false]
+        bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
+        grid_dims: [ 400 , 400 , 400 ]
+        periodic:  [false, true, false ]
 
 No external force is applied (`Fext = [0,0,0]`), and the kinematic viscosity is set to `1e-4`.
 
