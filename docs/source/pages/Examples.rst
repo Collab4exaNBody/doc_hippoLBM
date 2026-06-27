@@ -46,6 +46,11 @@ The expected results should show the development of a fully developed Poiseuille
 .. image:: ../_static/lbmpoiseuille.gif
    :align: center
 
+The velocity profile along the Z axis, once the flow is fully developed, is shown below:
+
+.. image:: ../_static/poiseuille_profile_0000003001_velocity_bounds.png
+   :align: center
+
 Couette Flow
 ^^^^^^^^^^^^
 
