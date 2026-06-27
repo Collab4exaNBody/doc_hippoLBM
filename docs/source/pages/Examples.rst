@@ -50,6 +50,7 @@ The velocity profile along the Z axis, once the flow is fully developed, is show
 
 .. image:: ../_static/poiseuille_profile_0000003001_velocity_bounds.png
    :align: center
+   :width: 60%
 
 Couette Flow
 ^^^^^^^^^^^^
