@@ -50,7 +50,7 @@ Where `Vec3d` represents the 3D velocity vector.
 - Description: A functor for computing macroscopic variables (densities and flux) for lattice Boltzmann method.
 - Parameters: No parameters but you need to define ``lbm_parameters``.
 
-Yaml example:
+YAML example:
 
 .. code-block:: yaml
 
@@ -60,7 +60,7 @@ Collision BGK
 ^^^^^^^^^^^^^
 
 - Operator name: ``bgk``
-- Description: This operator implements the Bhatnagar-Gross-Krook (BGK) collision model for the Lattice Boltzmann Method (LBM). This model assumes a single relaxation time approach  to approximate the collision process, driving the distribution functions toward equilibrium.
+- Description: This operator implements the Bhatnagar-Gross-Krook (BGK) collision model for the Lattice Boltzmann Method (LBM). This model assumes a single relaxation time approach to approximate the collision process, driving the distribution functions toward equilibrium.
 - Parameters: No parameters but you need to define ``lbm_parameters``.
 - Formula:
 
@@ -74,7 +74,7 @@ With:
 - :math:`f_i^{\text{eq}}(\mathbf{x}, t)` is the equilibrium distribution function for the i-th direction at position `x` and time `t`,
 - :math:`\tau` is the relaxation time parameter (LBMParameters).
 
-Yaml example:
+YAML example:
 
 .. code-block:: yaml
 
@@ -84,10 +84,10 @@ Collision MRT
 ^^^^^^^^^^^^^
 
 - Operator name: ``mrt``
-- Description: This operator implements the MRT collision model for the Lattice Boltzmann Method (LBM). This model assumes a single relaxation time approach  to approximate the collision process, driving the distribution functions toward equilibrium.
+- Description: This operator implements the Multiple-Relaxation-Time (MRT) collision model for the Lattice Boltzmann Method (LBM). This model assumes multiple relaxation times to approximate the collision process, driving the distribution functions toward equilibrium.
 - Parameters: No parameters but you need to define ``lbm_parameters``.
 
-Yaml example:
+YAML example:
 
 .. code-block:: yaml
 
@@ -96,7 +96,7 @@ Yaml example:
 Streaming
 ^^^^^^^^^
 
-The streaming step is divided into two parts (step1 and step2), and synchronization is required between these two steps to correctly update the ghost halos."
+The streaming step is divided into two parts (step1 and step2), and synchronization is required between these two steps to correctly update the ghost halos.
 
 - Operator name: ``streaming``
 - Description: TO DO
@@ -105,7 +105,7 @@ The streaming step is divided into two parts (step1 and step2), and synchronizat
   - ``asynchrone``: The asynchrone option controls the execution style: when true, it allows asynchronous operations with overlapping computation and communication, improving parallel performance. When false, it runs synchronously, ensuring sequential execution of operations and data updates.
 
 
-Yaml example:
+YAML example:
 
 .. code-block:: yaml
 

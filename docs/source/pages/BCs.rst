@@ -8,7 +8,7 @@ Neumann conditions
 
 Both Neumann boundary conditions described below are applied through a single operator, ``neumann``, which can be applied on one or several boundary planes at once via the ``regions`` parameter (allowed values: ``plan_xy_0``, ``plan_xy_l``). The same prescribed velocity ``U`` is enforced on every region listed.
 
-Yaml example:
+YAML example:
 
 .. code-block:: yaml
 
@@ -21,7 +21,7 @@ Neumann Z 0
 -----------
 
 - Operator Name: ``neumann`` with ``regions: [plan_xy_0]``
-- Description:  This operator enforces a Neumann boundary condition at z = lz in an LBM simulation. The Neumann boundary condition ensures that the gradient of the distribution function follows a prescribed value (``U{ux,uy,uz}``).
+- Description: This operator enforces a Neumann boundary condition at z = 0 in an LBM simulation. The Neumann boundary condition ensures that the gradient of the distribution function follows a prescribed value (``U{ux,uy,uz}``).
 
 - Formula:
 
@@ -53,7 +53,7 @@ Neumann Z 0
 
 	- ``U``: Prescribed velocity at the boundary (z = 0), enforcing the Neumann condition.
 
-Yaml example:
+YAML example:
 
 .. code-block:: yaml
 
@@ -67,7 +67,7 @@ Neumann Z l
 -----------
 
 - Operator Name: ``neumann`` with ``regions: [plan_xy_l]``
-- Description:  This operator enforces a Neumann boundary condition at z = lz in an LBM simulation. The Neumann boundary condition ensures that the gradient of the distribution function follows a prescribed value (``U{ux,uy,uz}``).
+- Description: This operator enforces a Neumann boundary condition at z = lz in an LBM simulation. The Neumann boundary condition ensures that the gradient of the distribution function follows a prescribed value (``U{ux,uy,uz}``).
 
 - Formula:
 
@@ -99,7 +99,7 @@ Neumann Z l
 
 	- ``U``: Prescribed velocity at the boundary (z = lz), enforcing the Neumann condition.
 
-Yaml example:
+YAML example:
 
 .. code-block:: yaml
 
@@ -130,9 +130,9 @@ Then, for a node :math:`\mathbf{x}` marked as a wall, and for each direction :ma
    f_i(\mathbf{x}, t + \delta t) = f_{\bar{i}}(\mathbf{x} + \mathbf{c}_i, t)
 
 - Operator Name: ``wall_bounce_back``
-- Description:The WallBounceBack class is described as part of the Lattice Boltzmann Method (LBM) implementation, specifically the wall bounce back steps.
+- Description: The WallBounceBack class is described as part of the Lattice Boltzmann Method (LBM) implementation, specifically the wall bounce back steps.
 
-Yaml example:
+YAML example:
 
 .. code-block:: yaml
 
@@ -147,11 +147,11 @@ This boundary condition models a **moving wall**, such as the lid in a lid-drive
 FORMULA: ``TODO``
 
 - Operator Name: ``cavity_z_0`` or ``cavity_z_l``
-- Description:  This operator enforces a Cavity boundary condition at z = lz in an LBM simulation. The Cavity boundary condition ensures that the gradient of the distribution function follows a prescribed value.
+- Description: This operator enforces a Cavity boundary condition at z = lz in an LBM simulation. The Cavity boundary condition ensures that the gradient of the distribution function follows a prescribed value.
 - Parameters:
 	- ``U``: Prescribed velocity at the boundary (z = lz or z = 0), enforcing the Cavity condition.
 
-Yaml example:
+YAML example:
 
 .. code-block:: yaml
 
@@ -178,7 +178,7 @@ This boundary condition generalizes the ``Cavity`` condition above: instead of b
 	- ``U``: Prescribed velocity (real units) at the moving wall.
 	- ``regions``: List of boundary planes on which the condition is applied. Allowed values: ``plan_xy_0``, ``plan_xy_l``, ``plan_xz_0``, ``plan_xz_l``, ``plan_yz_0``, ``plan_yz_l``.
 
-Yaml example:
+YAML example:
 
 .. code-block:: yaml
 

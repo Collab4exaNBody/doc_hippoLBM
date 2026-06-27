@@ -1,7 +1,7 @@
 Installation Guidelines
 =======================
 
-`HippoLBM` provides flexible installation methods to meet various user and developer needs. For user usage, the `Spack` (version `1.1.0`) package manager offers a straightforward installation process, ideal for user-only. However, for those who intend to develop or customize `HippoLBM`, `CMake` is recommended, as it supports both `CPU` and `GPU` configurations (`GPU` support is not available with `Spack`).
+`HippoLBM` provides flexible installation methods to meet various user and developer needs. For regular use, the `Spack` (version `1.1.0`) package manager offers a straightforward installation process, ideal for users only. However, for those who intend to develop or customize `HippoLBM`, `CMake` is recommended, as it supports both `CPU` and `GPU` configurations (`GPU` support is not available with `Spack`).
 
 Choose the method below that best suits your setup and follow the instructions for a smooth installation experience.
 
@@ -60,7 +60,7 @@ To proceed with the installation, your system must meet the minimum prerequisite
 
    .. tab:: Ubuntu GPU
 
-      Please, select the correct compute capability for your ``GPU`` for ``DCMAKE_CUDA_ARCHITECTURES`` instead of 86 in this example.
+      Please select the correct compute capability for your ``GPU`` for ``DCMAKE_CUDA_ARCHITECTURES`` instead of 86 in this example.
 
       .. code-block:: bash
 
@@ -75,7 +75,7 @@ To proceed with the installation, your system must meet the minimum prerequisite
 
    .. tab:: TOPAZE GPU
 
-      Please, note that you need copy on topaze onika and exaNBody repository. You can load the ``YAML`` module such as ``module load yaml-cpp/`` and add this option to the ``cmake`` command: ``-DCMAKE_PREFIX_PATH=/ccc/products/yaml-cpp-0.6.3/system/default/``
+      Please note that you need to copy the onika and exaNBody repositories onto TOPAZE. You can load the ``YAML`` module such as ``module load yaml-cpp/`` and add this option to the ``cmake`` command: ``-DCMAKE_PREFIX_PATH=/ccc/products/yaml-cpp-0.6.3/system/default/``
 
       .. code-block:: bash
 
@@ -122,7 +122,7 @@ Run CMake to configure the HippoLBM build:
 Launch examples / ctest
 -----------------------
 
-A set of minimal test cases can be run using the following command (non-regression test) in your `build` repository:
+A set of minimal test cases can be run using the following command (non-regression test) in your `build` directory:
 
 .. code-block:: bash
 
@@ -135,7 +135,7 @@ or
   ./hippoLBM ../hippoLBM/example/lbm_poiseuille.msp 
 
 
-You can also add hippoLBM to your bashrc by adding an alias (please, replace YOURDIR by your build directory): 
+You can also add hippoLBM to your bashrc by adding an alias (please replace YOURDIR with your build directory):
 
 .. code-block:: bash
 
@@ -159,7 +159,7 @@ Installing Spack
 Installing HippoLBM
 -------------------
 
-First get the ``spack`` repository in hippoLBM directory and add it to spack. It contains two packages: ``onika`` and ``hippolbm``:
+First, get the ``spack`` repository in the hippoLBM directory and add it to spack. It contains two packages: ``onika`` and ``hippolbm``:
 
 .. code-block:: bash
 		
@@ -167,7 +167,7 @@ First get the ``spack`` repository in hippoLBM directory and add it to spack. It
    spack repo add spack-repos
 
 
-Second install ``HippoLBM`` (this command will install ``cmake``, ``yaml-cpp``, and ``onika``).
+Second, install ``HippoLBM`` (this command will install ``cmake``, ``yaml-cpp``, and ``onika``).
 
 .. code-block:: bash
 
