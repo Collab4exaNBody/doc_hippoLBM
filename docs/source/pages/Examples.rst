@@ -14,15 +14,14 @@ We define the simulation domain for the Lattice Boltzmann Method (LBM). In this 
         grid_dims: [ 30 , 30 , 30 ]
         periodic:  [ true, true, false ]
 
-We apply two Neumann boundary conditions on the Z axis, (setting to `(ux = 0, uy = 0, uz = 0)`):
+We apply a Neumann boundary condition on both Z boundaries at once, via the ``regions`` parameter (setting to `(ux = 0, uy = 0, uz = 0)`):
 
 .. code-block:: yaml
 
    boundary_conditions:
-     - neumann_z_l:
+     - neumann:
         U: [0.0,0,0]
-     - neumann_z_0:
-        U: [0.0,0,0]
+        regions: [plan_xy_0, plan_xy_l]
 
 
 An external force of `(9.512485×10−5,0.0,0.0)` is applied to drive the flow. The kinematic viscosity is set to `1e−3`, and the average density is assumed to be `1000`.
@@ -69,13 +68,14 @@ We set the Lattice Boltzmann parameters with a kinematic viscosity (`nuth`) of `
         Fext: [0.000000e+00,0.000000e+00,0.000000e+00]
         nuth: 1e-2
 
-Boundary conditions are applied on the Z axis. On the lower boundary (`neumann_z_l`), the velocity is set to `U = [0.001, 0, 0]`.
+A Neumann boundary condition is applied on the upper Z boundary (`plan_xy_l`), with the velocity set to `U = [0.001, 0, 0]`.
 
 .. code-block:: yaml
 
    boundary_conditions:
-     - neumann_z_l:
+     - neumann:
         U: [0.001,0,0]
+        regions: [plan_xy_l]
 
 The expected results will show a linear velocity profile along the Z axis, where the velocity increases linearly from the stationary bottom boundary to the top boundary with a constant shear rate, characteristic of Couette flow.
 
@@ -182,6 +182,45 @@ The expected result is a modified cavity flow field with recirculation zones for
 .. image:: ../_static/cavity_wall.gif
    :align: center
 
+Lid-Driven Cavity Flow
+^^^^^^^^^^^^^^^^^^^^^^
+
+This example simulates a lid-driven cavity flow using the Lattice Boltzmann Method (LBM). The domain resolution is 100×10×100, with periodic boundary conditions applied along the YY axis, and non-periodic boundaries on the XX and ZZ axes.
+
+.. code-block:: yaml
+
+   do_domain:
+     - domain:
+        bounds:    [ [0,0,0],[0.1,0.01,0.1] ]
+        grid_dims: [ 100 , 10 , 100 ]
+        periodic:  [ false, true, false ]
+
+No external force is applied (`Fext = [0, 0, 0]`), and the kinematic viscosity is set to `1e-1`.
+
+.. code-block:: yaml
+
+   set_lbm_parameters:
+     - lbm_parameters:
+        Fext: [0,0,0]
+        nuth: 1e-1
+
+Boundary conditions are applied as follows:
+
+- **Pre-streaming**: `pre_bounce_back` applies bounce-back on the domain walls.
+- **Post-streaming**: `post_bounce_back` finalizes bounce-back, and `lid_driven_cavity` enforces a moving lid with velocity `U = [0.1, 0.0, 0]` on the upper XY plane (`plan_xy_l`). The `lid_driven_cavity` operator must be called after the bounce-back step.
+
+.. code-block:: yaml
+
+   pre_stream_bcs:
+     - pre_bounce_back
+
+   post_stream_bcs:
+     - post_bounce_back
+     - lid_driven_cavity:  ## needs to be called after bounce back
+        U: [0.1, 0.0, 0]
+        regions: [plan_xy_l]
+
+The expected result is a recirculating vortex driven by the moving lid at the top of the cavity, characteristic of the classical lid-driven cavity benchmark.
 
 Pressure-Driven Flow
 ^^^^^^^^^^^^^^^^^^^^

@@ -6,10 +6,21 @@ In LBM simulations, boundary conditions must be defined within the ``boundary_co
 Neumann conditions
 ^^^^^^^^^^^^^^^^^^
 
+Both Neumann boundary conditions described below are applied through a single operator, ``neumann``, which can be applied on one or several boundary planes at once via the ``regions`` parameter (allowed values: ``plan_xy_0``, ``plan_xy_l``). The same prescribed velocity ``U`` is enforced on every region listed.
+
+Yaml example:
+
+.. code-block:: yaml
+
+   boundary_conditions:
+     - neumann:
+        U: [0.0,0,0]
+        regions: [plan_xy_0, plan_xy_l]
+
 Neumann Z 0
 -----------
 
-- Operator Name: ``neumann_z_0``
+- Operator Name: ``neumann`` with ``regions: [plan_xy_0]``
 - Description:  This operator enforces a Neumann boundary condition at z = lz in an LBM simulation. The Neumann boundary condition ensures that the gradient of the distribution function follows a prescribed value (``U{ux,uy,uz}``).
 
 - Formula:
@@ -47,14 +58,15 @@ Yaml example:
 .. code-block:: yaml
 
    boundary_conditions:
-     - neumann_z_0:
+     - neumann:
         U: [0.001,0,0]
+        regions: [plan_xy_0]
 
 
 Neumann Z l
 -----------
 
-- Operator Name: ``neumann_z_l``
+- Operator Name: ``neumann`` with ``regions: [plan_xy_l]``
 - Description:  This operator enforces a Neumann boundary condition at z = lz in an LBM simulation. The Neumann boundary condition ensures that the gradient of the distribution function follows a prescribed value (``U{ux,uy,uz}``).
 
 - Formula:
@@ -92,8 +104,9 @@ Yaml example:
 .. code-block:: yaml
 
    boundary_conditions:
-     - neumann_z_l:
+     - neumann:
         U: [0.001,0,0]
+        regions: [plan_xy_l]
 
 Bounce Back
 ^^^^^^^^^^^
@@ -145,3 +158,32 @@ Yaml example:
   pre_stream_bcs:
     - cavity_z_l:
        U: [0.0, 0.1, 0]
+
+`Lid-Driven Cavity`
+^^^^^^^^^^^^^^^^^^^
+
+This boundary condition generalizes the ``Cavity`` condition above: instead of being restricted to the bottom or top Z plane, it can be applied on any of the six domain boundary planes through the ``regions`` parameter. At each fluid node adjacent to the selected plane(s), it enforces a moving wall (lid) by reinitializing the distribution functions to their equilibrium value at the prescribed velocity ``U``.
+
+- Formula:
+
+.. math::
+   \rho = \sum_{i=0}^{Q-1} f_i
+
+.. math::
+   f_i = w_i \rho \left(1 + 3 (\mathbf{e}_i \cdot \mathbf{U}) + 4.5 (\mathbf{e}_i \cdot \mathbf{U})^2 - 1.5 \, \mathbf{U} \cdot \mathbf{U}\right)
+
+- Operator Name: ``lid_driven_cavity``
+- Description: This operator enforces a moving-wall (lid) boundary condition by reinitializing the distribution functions to their equilibrium value at the prescribed velocity ``U``, on one or several boundary planes given by ``regions``. It must be called after the bounce-back step, typically as part of ``post_stream_bcs``.
+- Parameters:
+	- ``U``: Prescribed velocity (real units) at the moving wall.
+	- ``regions``: List of boundary planes on which the condition is applied. Allowed values: ``plan_xy_0``, ``plan_xy_l``, ``plan_xz_0``, ``plan_xz_l``, ``plan_yz_0``, ``plan_yz_l``.
+
+Yaml example:
+
+.. code-block:: yaml
+
+  post_stream_bcs:
+    - post_bounce_back
+    - lid_driven_cavity:  ## needs to be called after bounce back
+       U: [0.1, 0.0, 0]
+       regions: [plan_xy_l]
