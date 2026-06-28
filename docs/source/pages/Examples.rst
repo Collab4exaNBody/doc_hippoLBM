@@ -88,6 +88,12 @@ The expected results will show a linear velocity profile along the Z axis, where
 .. image:: ../_static/couette.gif
    :align: center
 
+The velocity profile along the Z axis, once the flow is fully developed, is shown below:
+
+.. image:: ../_static/couette_profile_0000003000_velocity_bounds.png
+   :align: center
+   :width: 60%
+
 Cavity Flow
 ^^^^^^^^^^^
 
