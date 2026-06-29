@@ -94,6 +94,58 @@ The velocity profile along the Z axis, once the flow is fully developed, is show
    :align: center
    :width: 60%
 
+
+Lid-Driven Cavity Flow
+^^^^^^^^^^^^^^^^^^^^^^
+
+This example simulates a lid-driven cavity flow using the Lattice Boltzmann Method (LBM), set up to reach a Reynolds number of 1000. The domain resolution is 200×10×200, with bounds expressed in meters, and periodic boundary conditions applied along the YY axis, and non-periodic boundaries on the XX and ZZ axes.
+
+.. code-block:: yaml
+
+   do_domain:
+     - domain:
+        bounds:    [ [0 m, 0 m, 0 m],[0.01 m, 0.0005 m, 0.01 m] ]
+        grid_dims: [ 200 , 10 , 200 ]
+        periodic:  [ false, true, false ]
+
+No external force is applied (`Fext = [0, 0, 0]`), the kinematic viscosity is set to `1e-5 m2.s-1`, and the celerity (speed of sound used to convert real units to LBM units) is set to `10`.
+
+.. code-block:: yaml
+
+   set_lbm_parameters:
+     - lbm_parameters:
+        Fext: [0,0,0]
+        nuth: 1e-5  # m2.s-1
+        celerity: 10
+
+Boundary conditions are applied as follows:
+
+- **Pre-streaming**: `pre_bounce_back` applies bounce-back on the domain walls.
+- **Post-streaming**: `post_bounce_back` finalizes bounce-back, and `lid_driven_cavity` enforces a moving lid with velocity `U = [1, 0.0, 0]` (Re = 1000) on the upper XY plane (`plan_xy_l`). The `lid_driven_cavity` operator must be called after the bounce-back step.
+
+.. code-block:: yaml
+
+   pre_stream_bcs:
+     - pre_bounce_back
+
+   post_stream_bcs:
+     - post_bounce_back
+     - lid_driven_cavity:  ## needs to be called after bounce back
+        U: [1, 0.0, 0]  ## Re : 1000
+        regions: [plan_xy_l]
+
+The expected result is a recirculating vortex driven by the moving lid at the top of the cavity, characteristic of the classical lid-driven cavity benchmark.
+
+.. image:: ../_static/liddrivencavity.gif
+   :align: center
+
+The velocity field once the flow has reached its steady state is shown below:
+
+.. image:: ../_static/liddrivencavity.png
+   :align: center
+   :width: 60%
+
+
 Cavity Flow
 ^^^^^^^^^^^
 
@@ -194,55 +246,6 @@ The expected result is a modified cavity flow field with recirculation zones for
 .. image:: ../_static/cavity_wall.gif
    :align: center
 
-Lid-Driven Cavity Flow
-^^^^^^^^^^^^^^^^^^^^^^
-
-This example simulates a lid-driven cavity flow using the Lattice Boltzmann Method (LBM), set up to reach a Reynolds number of 1000. The domain resolution is 200×10×200, with bounds expressed in meters, and periodic boundary conditions applied along the YY axis, and non-periodic boundaries on the XX and ZZ axes.
-
-.. code-block:: yaml
-
-   do_domain:
-     - domain:
-        bounds:    [ [0 m, 0 m, 0 m],[0.01 m, 0.0005 m, 0.01 m] ]
-        grid_dims: [ 200 , 10 , 200 ]
-        periodic:  [ false, true, false ]
-
-No external force is applied (`Fext = [0, 0, 0]`), the kinematic viscosity is set to `1e-5 m2.s-1`, and the celerity (speed of sound used to convert real units to LBM units) is set to `10`.
-
-.. code-block:: yaml
-
-   set_lbm_parameters:
-     - lbm_parameters:
-        Fext: [0,0,0]
-        nuth: 1e-5  # m2.s-1
-        celerity: 10
-
-Boundary conditions are applied as follows:
-
-- **Pre-streaming**: `pre_bounce_back` applies bounce-back on the domain walls.
-- **Post-streaming**: `post_bounce_back` finalizes bounce-back, and `lid_driven_cavity` enforces a moving lid with velocity `U = [1, 0.0, 0]` (Re = 1000) on the upper XY plane (`plan_xy_l`). The `lid_driven_cavity` operator must be called after the bounce-back step.
-
-.. code-block:: yaml
-
-   pre_stream_bcs:
-     - pre_bounce_back
-
-   post_stream_bcs:
-     - post_bounce_back
-     - lid_driven_cavity:  ## needs to be called after bounce back
-        U: [1, 0.0, 0]  ## Re : 1000
-        regions: [plan_xy_l]
-
-The expected result is a recirculating vortex driven by the moving lid at the top of the cavity, characteristic of the classical lid-driven cavity benchmark.
-
-.. image:: ../_static/liddrivencavity.gif
-   :align: center
-
-The velocity field once the flow has reached its steady state is shown below:
-
-.. image:: ../_static/liddrivencavity.png
-   :align: center
-   :width: 60%
 
 Pressure-Driven Flow
 ^^^^^^^^^^^^^^^^^^^^
