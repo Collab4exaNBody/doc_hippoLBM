@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'hippoLBM'
-copyright = '2025 - 2025, Raphaël Prat, Lhassan Amarsid'
-author = 'Raphaël Prat, Lhassan Amarsid'
+copyright = '2025 - 2026, Raphaël Prat, Lhassan Amarsid, Vincent Topin, Guillaume Bareigts'
+author = 'Raphaël Prat, Lhassan Amarsid, Vincent Topin, Guillaume Bareigts'
 
 # -- General configuration ---------------------------------------------------
 
