@@ -17,4 +17,4 @@ Historically, the physical features of ``HippoLBM`` originate from earlier work 
 Coupling
 ^^^^^^^^
 
-- ``HippoLBM`` is currently being coupled with the ``exaDEM`` code (built on the ``ExaNBody``/``Onika`` framework :cite:`Carrard_2024`) in a dedicated code named ``ExaCoLD`` (not open source).
+- ``HippoLBM`` is currently being coupled with the ``exaDEM`` code :cite:`prat2025exadem` (built on the ``ExaNBody``/``Onika`` framework :cite:`Carrard_2024`) in a dedicated code named ``ExaCoLD`` (not open source).
