@@ -111,6 +111,33 @@ YAML example:
 Bounce Back
 ^^^^^^^^^^^
 
+Domain Boundaries (Pre/Post-Collision)
+---------------------------------------
+
+``pre_bounce_back`` and ``post_bounce_back`` enforce the no-slip (bounce-back) condition on the outer, non-periodic boundaries of the domain. They must be used as a pair: ``pre_bounce_back`` is called in ``pre_stream_bcs`` (before the collision/streaming step, to save the incoming distribution functions at the boundary), and ``post_bounce_back`` is called in ``post_stream_bcs`` (after streaming, to bounce them back). Any other boundary condition that needs to overwrite the outgoing distribution functions at the boundary (``cavity_z_0``/``cavity_z_l``, ``lid_driven_cavity``) must be placed in ``post_stream_bcs`` after ``post_bounce_back``.
+
+- Operator Name: ``pre_bounce_back``
+- Description: This operator applies the pre-collision bounce-back boundary condition to the distribution functions at the boundary points of the grid.
+- Parameters: No parameters.
+
+YAML example:
+
+.. code-block:: yaml
+
+  pre_stream_bcs:
+    - pre_bounce_back
+
+- Operator Name: ``post_bounce_back``
+- Description: This operator applies the post-collision bounce-back boundary condition to the distribution functions at the boundary points of the grid.
+- Parameters: No parameters.
+
+YAML example:
+
+.. code-block:: yaml
+
+  post_stream_bcs:
+    - post_bounce_back
+
 Wall / Surface conditions
 -------------------------
 

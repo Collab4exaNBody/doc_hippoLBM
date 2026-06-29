@@ -134,8 +134,41 @@ or
 
 .. code-block:: bash
 
-  ./hippoLBM ../hippoLBM/example/lbm_poiseuille.msp 
+  ./hippoLBM ../hippoLBM/example/lbm_poiseuille.msp
 
+This runs the Poiseuille flow example, whose YAML input file looks like this:
+
+YAML example:
+
+.. code-block:: yaml
+
+   do_domain:
+     - domain:
+        bounds:    [ [0,0,0],[0.1,0.1,0.1]]
+        grid_dims: [ 30 , 30 , 30 ]
+        periodic:  [ true, true, false]
+
+   set_lbm_parameters:
+     - lbm_parameters:
+        Fext: [9.512485e-05,0.000000e+00,0.000000e+00]
+        nuth: 1e-3
+
+   boundary_conditions:
+     - neumann:
+        U: [0.0,0,0]
+        regions: [plan_xy_0, plan_xy_l]
+
+   checker:
+     - plane_velocity_profile:
+        dimension: Z
+
+   global:
+      simulation_paraview_freq: 100
+      simulation_end_iteration: 3000
+      simulation_print_log_freq: 10
+      output_directory: "PoiseuilleTestDir"
+
+See :doc:`BCs` and :doc:`Examples` for more details on the available boundary conditions and other ready-to-run example input files.
 
 You can also add hippoLBM to your bashrc by adding an alias (please replace YOURDIR with your build directory):
 

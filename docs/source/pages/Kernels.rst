@@ -115,3 +115,51 @@ YAML example:
 .. note::
 
   ``asynchrone`` option is disabled.
+
+Checkers
+^^^^^^^^
+
+Checkers are analysis operators, declared in the ``checker:`` block, that inspect the simulation state without modifying it (useful for regression testing or post-processing).
+
+Check Macro Quantities
+----------------------
+
+- Operator name: ``check_macro_quantities``
+- Description: This operator checks macroscopic quantities (sum of densities, minimum and maximum velocity norm) against user-defined bounds, and aborts the simulation if any check fails. It is mainly used for regression testing (CI).
+- Parameters:
+
+  - ``density``: Expected sum of all densities (optional, requires ``tol``).
+  - ``tol``: Tolerance, relative to ``density`` (optional).
+  - ``vmin``: Minimal velocity norm allowed (default: 0).
+  - ``vmax``: Maximal velocity norm allowed (optional).
+
+YAML example:
+
+.. code-block:: yaml
+
+  checker:
+    - check_macro_quantities:
+       density: 1e6
+       tol: 1e-6
+       vmin: 0
+       vmax: 0.1
+
+Plane Velocity Profile
+-----------------------
+
+- Operator name: ``plane_velocity_profile``
+- Description: This operator computes, for each plane perpendicular to a chosen dimension (X, Y or Z), the average, minimum and maximum velocity norm over the fluid points of that plane, and dumps the result to a CSV file (columns: ``position avg min max``).
+- Parameters:
+
+  - ``dimension``: The dimension along which the profile is computed: ``"X"``, ``"Y"`` or ``"Z"``.
+  - ``dump_file``: Name of the CSV file, formatted with the current timestep (default: ``profile_%010d.csv``).
+  - ``output_directory``: Base output directory for the profile files (default: ``hippoLBMOutputDir``).
+
+YAML example:
+
+.. code-block:: yaml
+
+  checker:
+    - plane_velocity_profile:
+       dimension: "Z"
+       dump_file: "profile_%010d.csv"

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4. Boundary Conditions &mdash; hippoLBM  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9bcbadda"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/design-tabs.js?v=36754332"></script>
+        <script>window.MathJax = {"chtml": {"displayAlign": "left"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5. Examples" href="Examples.html" />
+    <link rel="prev" title="3. Kernels" href="Kernels.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            hippoLBM
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">HippoLBM</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Introduction.html">1. HippoLBM Software</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Install.html">2. Installation Guidelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Kernels.html">3. Kernels</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Boundary Conditions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#neumann-conditions">4.1. Neumann conditions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#neumann-z-0">4.1.1. Neumann Z 0</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#neumann-z-l">4.1.2. Neumann Z l</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#bounce-back">4.2. Bounce Back</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#wall-surface-conditions">4.2.1. Wall / Surface conditions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#cavity">4.3. <cite>Cavity</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lid-driven-cavity">4.4. <cite>Lid-Driven Cavity</cite></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">5. Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Performance.html">6. Performance</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">hippoLBM</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4. </span>Boundary Conditions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/BCs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="boundary-conditions">
+<h1><span class="section-number">4. </span>Boundary Conditions<a class="headerlink" href="#boundary-conditions" title="Link to this heading"></a></h1>
+<p>In LBM simulations, boundary conditions must be defined within the <code class="docutils literal notranslate"><span class="pre">boundary_conditions</span></code> operator block. This block allows the specification of different types of boundary conditions applied to the simulation domain. It is possible to include multiple boundary conditions within the same boundary_conditions block. Each condition will be processed accordingly, ensuring accurate enforcement of flow properties at the domain boundaries.</p>
+<section id="neumann-conditions">
+<h2><span class="section-number">4.1. </span>Neumann conditions<a class="headerlink" href="#neumann-conditions" title="Link to this heading"></a></h2>
+<p>Both Neumann boundary conditions described below are applied through a single operator, <code class="docutils literal notranslate"><span class="pre">neumann</span></code>, which can be applied on one or several boundary planes at once via the <code class="docutils literal notranslate"><span class="pre">regions</span></code> parameter (allowed values: <code class="docutils literal notranslate"><span class="pre">plan_xy_0</span></code>, <code class="docutils literal notranslate"><span class="pre">plan_xy_l</span></code>). The same prescribed velocity <code class="docutils literal notranslate"><span class="pre">U</span></code> is enforced on every region listed.</p>
+<p>YAML example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">boundary_conditions</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neumann</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">U</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">]</span>
+<span class="w">     </span><span class="nt">regions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">plan_xy_0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">plan_xy_l</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<section id="neumann-z-0">
+<h3><span class="section-number">4.1.1. </span>Neumann Z 0<a class="headerlink" href="#neumann-z-0" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Operator Name: <code class="docutils literal notranslate"><span class="pre">neumann</span></code> with <code class="docutils literal notranslate"><span class="pre">regions:</span> <span class="pre">[plan_xy_0]</span></code></p></li>
+<li><p>Description: This operator enforces a Neumann boundary condition at z = 0 in an LBM simulation. The Neumann boundary condition ensures that the gradient of the distribution function follows a prescribed value (<code class="docutils literal notranslate"><span class="pre">U{ux,uy,uz}</span></code>).</p></li>
+<li><p>Formula:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\rho = \frac{f_{0} + f_{1} + f_{2} + f_{3} + f_{4} + f_{7} + f_{9} + f_{10} + f_{8} + 2 (f_{6} + f_{13} + f_{12} + f_{17} + f_{16})}{1 - u_z}\]</div>
+<div class="math notranslate nohighlight">
+\[n_{xz} = \frac{1}{2} (f_{1} + f_{7} + f_{9} - (f_{2} + f_{10} + f_{8})) - \frac{1}{3} \rho u_x\]</div>
+<div class="math notranslate nohighlight">
+\[n_{yz} = \frac{1}{2} (f_{3} + f_{7} + f_{10} - (f_{4} + f_{9} + f_{8})) - \frac{1}{3} \rho u_y\]</div>
+<div class="math notranslate nohighlight">
+\[f_{5} = f_{6} + \frac{1}{3} \rho u_z\]</div>
+<div class="math notranslate nohighlight">
+\[f_{11} = f_{12} + \frac{1}{6} \rho (u_z + u_x) - n_{xz}\]</div>
+<div class="math notranslate nohighlight">
+\[f_{14} = f_{13} + \frac{1}{6} \rho (u_z - u_x) + n_{xz}\]</div>
+<div class="math notranslate nohighlight">
+\[f_{15} = f_{16} + \frac{1}{6} \rho (u_z + u_y) - n_{yz}\]</div>
+<div class="math notranslate nohighlight">
+\[f_{18} = f_{17} + \frac{1}{6} \rho (u_z - u_y) + n_{yz}\]</div>
+<ul>
+<li><p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">U</span></code>: Prescribed velocity at the boundary (z = 0), enforcing the Neumann condition.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>YAML example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">boundary_conditions</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neumann</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">U</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.001</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">]</span>
+<span class="w">     </span><span class="nt">regions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">plan_xy_0</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</section>
+<section id="neumann-z-l">
+<h3><span class="section-number">4.1.2. </span>Neumann Z l<a class="headerlink" href="#neumann-z-l" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Operator Name: <code class="docutils literal notranslate"><span class="pre">neumann</span></code> with <code class="docutils literal notranslate"><span class="pre">regions:</span> <span class="pre">[plan_xy_l]</span></code></p></li>
+<li><p>Description: This operator enforces a Neumann boundary condition at z = lz in an LBM simulation. The Neumann boundary condition ensures that the gradient of the distribution function follows a prescribed value (<code class="docutils literal notranslate"><span class="pre">U{ux,uy,uz}</span></code>).</p></li>
+<li><p>Formula:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\rho = \frac{f_{0} + f_{1} + f_{2} + f_{3} + f_{4} + f_{7} + f_{9} + f_{10} + f_{8} + 2 (f_{5} + f_{11} + f_{14} + f_{15} + f_{18})}{1 + u_z}\]</div>
+<div class="math notranslate nohighlight">
+\[n_{xz} = \frac{1}{2} (f_{1} + f_{7} + f_{9} - (f_{2} + f_{10} + f_{8})) - \frac{1}{3} \rho u_x\]</div>
+<div class="math notranslate nohighlight">
+\[n_{yz} = \frac{1}{2} (f_{3} + f_{7} + f_{10} - (f_{4} + f_{9} + f_{8})) - \frac{1}{3} \rho u_y\]</div>
+<div class="math notranslate nohighlight">
+\[f_{6} = f_{5} - \frac{1}{3} \rho u_z\]</div>
+<div class="math notranslate nohighlight">
+\[f_{13} = f_{14} + \frac{1}{6} \rho (-u_z + u_x) - n_{xz}\]</div>
+<div class="math notranslate nohighlight">
+\[f_{12} = f_{11} + \frac{1}{6} \rho (-u_z - u_x) + n_{xz}\]</div>
+<div class="math notranslate nohighlight">
+\[f_{17} = f_{18} + \frac{1}{6} \rho (-u_z + u_y) - n_{yz}\]</div>
+<div class="math notranslate nohighlight">
+\[f_{16} = f_{15} + \frac{1}{6} \rho (-u_z - u_y) + n_{yz}\]</div>
+<ul>
+<li><p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">U</span></code>: Prescribed velocity at the boundary (z = lz), enforcing the Neumann condition.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>YAML example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">boundary_conditions</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">neumann</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">U</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.001</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nv">0</span><span class="p p-Indicator">]</span>
+<span class="w">     </span><span class="nt">regions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">plan_xy_l</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="bounce-back">
+<h2><span class="section-number">4.2. </span>Bounce Back<a class="headerlink" href="#bounce-back" title="Link to this heading"></a></h2>
+<section id="wall-surface-conditions">
+<h3><span class="section-number">4.2.1. </span>Wall / Surface conditions<a class="headerlink" href="#wall-surface-conditions" title="Link to this heading"></a></h3>
+<p>The standard bounce-back boundary condition is used to enforce the no-slip condition at solid walls in Lattice Boltzmann Methods (LBM). It is implemented by reflecting the distribution functions at wall nodes back in the opposite direction.</p>
+<p>Let:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathbf{x}\)</span> be the position of a lattice node,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{c}_i = (e_{x,i}, e_{y,i}, e_{z,i})\)</span> be the discrete velocity in direction <span class="math notranslate nohighlight">\(i\)</span>,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\bar{i}\)</span> be the index of the opposite direction of <span class="math notranslate nohighlight">\(i\)</span>,</p></li>
+<li><p><span class="math notranslate nohighlight">\(f_i(\mathbf{x}, t)\)</span> be the distribution function in direction <span class="math notranslate nohighlight">\(i\)</span> at node <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> and time <span class="math notranslate nohighlight">\(t\)</span>.</p></li>
+</ul>
+<p>Then, for a node <span class="math notranslate nohighlight">\(\mathbf{x}\)</span> marked as a wall, and for each direction <span class="math notranslate nohighlight">\(i = 1, \dots, Q - 1\)</span>, the bounce-back condition is applied as:</p>
+<div class="math notranslate nohighlight">
+\[f_i(\mathbf{x}, t + \delta t) = f_{\bar{i}}(\mathbf{x} + \mathbf{c}_i, t)\]</div>
+<ul class="simple">
+<li><p>Operator Name: <code class="docutils literal notranslate"><span class="pre">wall_bounce_back</span></code></p></li>
+<li><p>Description: The WallBounceBack class is described as part of the Lattice Boltzmann Method (LBM) implementation, specifically the wall bounce back steps.</p></li>
+</ul>
+<p>YAML example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pre_stream_bcs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wall_bounce_back</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="cavity">
+<h2><span class="section-number">4.3. </span><cite>Cavity</cite><a class="headerlink" href="#cavity" title="Link to this heading"></a></h2>
+<p>This boundary condition models a <strong>moving wall</strong>, such as the lid in a lid-driven cavity flow. It is implemented through momentum injection at fluid nodes adjacent to the boundary.</p>
+<p>FORMULA: <code class="docutils literal notranslate"><span class="pre">TODO</span></code></p>
+<ul class="simple">
+<li><p>Operator Name: <code class="docutils literal notranslate"><span class="pre">cavity_z_0</span></code> or <code class="docutils literal notranslate"><span class="pre">cavity_z_l</span></code></p></li>
+<li><p>Description: This operator enforces a Cavity boundary condition at z = lz in an LBM simulation. The Cavity boundary condition ensures that the gradient of the distribution function follows a prescribed value.</p></li>
+<li><dl class="simple">
+<dt>Parameters:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">U</span></code>: Prescribed velocity at the boundary (z = lz or z = 0), enforcing the Cavity condition.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>YAML example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pre_stream_bcs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">cavity_z_l</span><span class="p">:</span>
+<span class="w">     </span><span class="nt">U</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</section>
+<section id="lid-driven-cavity">
+<h2><span class="section-number">4.4. </span><cite>Lid-Driven Cavity</cite><a class="headerlink" href="#lid-driven-cavity" title="Link to this heading"></a></h2>
+<p>This boundary condition generalizes the <code class="docutils literal notranslate"><span class="pre">Cavity</span></code> condition above: instead of being restricted to the bottom or top Z plane, it can be applied on any of the six domain boundary planes through the <code class="docutils literal notranslate"><span class="pre">regions</span></code> parameter. At each fluid node adjacent to the selected plane(s), it enforces a moving wall (lid) by reinitializing the distribution functions to their equilibrium value at the prescribed velocity <code class="docutils literal notranslate"><span class="pre">U</span></code>.</p>
+<ul class="simple">
+<li><p>Formula:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\rho = \sum_{i=0}^{Q-1} f_i\]</div>
+<div class="math notranslate nohighlight">
+\[f_i = w_i \rho \left(1 + 3 (\mathbf{e}_i \cdot \mathbf{U}) + 4.5 (\mathbf{e}_i \cdot \mathbf{U})^2 - 1.5 \, \mathbf{U} \cdot \mathbf{U}\right)\]</div>
+<ul class="simple">
+<li><p>Operator Name: <code class="docutils literal notranslate"><span class="pre">lid_driven_cavity</span></code></p></li>
+<li><p>Description: This operator enforces a moving-wall (lid) boundary condition by reinitializing the distribution functions to their equilibrium value at the prescribed velocity <code class="docutils literal notranslate"><span class="pre">U</span></code>, on one or several boundary planes given by <code class="docutils literal notranslate"><span class="pre">regions</span></code>. It must be called after the bounce-back step, typically as part of <code class="docutils literal notranslate"><span class="pre">post_stream_bcs</span></code>.</p></li>
+<li><dl class="simple">
+<dt>Parameters:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">U</span></code>: Prescribed velocity (real units) at the moving wall.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">regions</span></code>: List of boundary planes on which the condition is applied. Allowed values: <code class="docutils literal notranslate"><span class="pre">plan_xy_0</span></code>, <code class="docutils literal notranslate"><span class="pre">plan_xy_l</span></code>, <code class="docutils literal notranslate"><span class="pre">plan_xz_0</span></code>, <code class="docutils literal notranslate"><span class="pre">plan_xz_l</span></code>, <code class="docutils literal notranslate"><span class="pre">plan_yz_0</span></code>, <code class="docutils literal notranslate"><span class="pre">plan_yz_l</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>YAML example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">post_stream_bcs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">post_bounce_back</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">lid_driven_cavity</span><span class="p">:</span><span class="w">  </span><span class="c1">## needs to be called after bounce back</span>
+<span class="w">     </span><span class="nt">U</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0.1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0.0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span>
+<span class="w">     </span><span class="nt">regions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">plan_xy_l</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Kernels.html" class="btn btn-neutral float-left" title="3. Kernels" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Examples.html" class="btn btn-neutral float-right" title="5. Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025 - 2025, Raphaël Prat, Lhassan Amarsid.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
