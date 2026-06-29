@@ -11,6 +11,10 @@ Installation With CMake
 Minimal Requirements
 --------------------
 
+.. note::
+
+  ``yaml-cpp`` 0.6.3 is not compatible with ``CMake`` 4.x (build fails with a ``cmake_minimum_required`` error). If your system ships a newer ``CMake``, install an older one (for example via ``spack install cmake@3.27.9`` and ``spack load cmake@3.27.9``) before running the steps below.
+
 The first step involves the installation of ``yaml-cpp``, which can be achieved using either the ``spack`` package manager or ``cmake``:
 
 .. tabs::
@@ -51,7 +55,7 @@ To proceed with the installation, your system must meet the minimum prerequisite
       .. code-block:: bash
 
          export CURRENT_HOME=$PWD
-         git clone --branch v1.0.4 https://github.com/Collab4exaNBody/onika.git
+         git clone --branch v1.1.0 https://github.com/Collab4exaNBody/onika.git
          mkdir ${CURRENT_HOME}/build-onika && cd ${CURRENT_HOME}/build-onika
          cmake ${CURRENT_HOME}/onika -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${CURRENT_HOME}/install-onika -DONIKA_BUILD_CUDA=OFF
          make install -j 10
@@ -65,8 +69,7 @@ To proceed with the installation, your system must meet the minimum prerequisite
       .. code-block:: bash
 
          export CURRENT_HOME=$PWD
-         git clone --branch v1.0.4 https://github.com/Collab4exaNBody/onika.git
-         git clone --branch v2.0.4 https://github.com/Collab4exaNBody/exaNBody.git
+         git clone --branch v1.1.0 https://github.com/Collab4exaNBody/onika.git
          mkdir ${CURRENT_HOME}/build-onika && cd ${CURRENT_HOME}/build-onika
          cmake ${CURRENT_HOME}/onika -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${CURRENT_HOME}/install-onika -DONIKA_BUILD_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=86
          make install -j 10
@@ -75,14 +78,13 @@ To proceed with the installation, your system must meet the minimum prerequisite
 
    .. tab:: TOPAZE GPU
 
-      Please note that you need to copy the onika and exaNBody repositories onto TOPAZE. You can load the ``YAML`` module such as ``module load yaml-cpp/`` and add this option to the ``cmake`` command: ``-DCMAKE_PREFIX_PATH=/ccc/products/yaml-cpp-0.6.3/system/default/``
-
+      Please note that you need to copy the onika repository onto TOPAZE. You can load the ``YAML`` module such as ``module load yaml-cpp/``.
       .. code-block:: bash
 
          module load gnu/13.2.0 cuda/12.4 mpi/openmpi/4.1.6 cmake/3.29.6
          cd $CCCSCRATCHDIR
          export CURRENT_HOME=$PWD
-         // copy onika v1.0.4
+         // copy onika v1.1.0
          mkdir ${CURRENT_HOME}/build-onika && cd ${CURRENT_HOME}/build-onika
          cmake ${CURRENT_HOME}/onika -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${CURRENT_HOME}/install-onika -DONIKA_BUILD_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=80
          make install -j 10
@@ -94,7 +96,7 @@ HippoLBM Installation
 
 To install ``HippoLBM``, follow these steps:
 
-Set the exaNBody_DIR environment variable to the installation path. Clone the ``HippoLBM`` repository using the command:
+Make sure the ``onika_DIR`` environment variable is still set to your Onika installation path (set in the previous step). Clone the ``HippoLBM`` repository using the command:
 
 .. code-block:: bash
 		
@@ -140,7 +142,7 @@ You can also add hippoLBM to your bashrc by adding an alias (please replace YOUR
 .. code-block:: bash
 
   vi ~/.bashrc
-  source ~/YOURDIR/build/bin/hippoLBM
+  source ~/YOURDIR/build/bin/setup-env.sh
   alias hippoLBM='~/YOURDIR/build/hippoLBM'
 
 Or just on your local environment:
