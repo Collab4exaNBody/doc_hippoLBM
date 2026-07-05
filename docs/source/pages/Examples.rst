@@ -151,6 +151,12 @@ The velocity field once the flow has reached its steady state is shown below:
    :align: center
    :width: 60%
 
+The centerline velocity profiles compared against the reference data of :cite:`ghia1982high` are shown below:
+
+.. image:: ../_static/lid_driven_cavity_check.png
+   :align: center
+   :width: 60%
+
 
 Karman Vortex Street
 ^^^^^^^^^^^^^^^^^^^^
