@@ -152,107 +152,132 @@ The velocity field once the flow has reached its steady state is shown below:
    :width: 60%
 
 
-Cavity Flow
-^^^^^^^^^^^
+Karman Vortex Street
+^^^^^^^^^^^^^^^^^^^^
 
-We define the simulation domain for the cavity flow using the Lattice Boltzmann Method (LBM). In this case, the resolution is set to 200×200×200, with non-periodic boundary conditions applied in all directions (XX, YY, and ZZ).
-
-.. code-block:: yaml
-
-   do_domain:
-     - domain:
-        bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
-        cell_dims: [ 200 , 200 , 200 ]
-        periodic:  [ false, false, false ]
-
-We set the Lattice Boltzmann parameters, with no external force applied (i.e., `Fext = [0, 0, 0]`) and a kinematic viscosity (`nuth`) of `1e-4`.
-
-.. code-block:: yaml
-
-   set_lbm_parameters:
-     - lbm_parameters:
-        Fext: [0.000000e+00,0.000000e+00,0.000000e+00]
-        nuth: 1e-4
-
-The boundary conditions for the simulation are defined as follows:
-
-- **Pre-streaming boundary conditions**: The `pre_bounce_back` and `cavity_z_l` conditions are set, with a velocity of `U = [0.0, 0.1, 0]` applied on the lower Z boundary.
-- **Post-streaming boundary condition**: The `post_bounce_back` condition is applied on the other boundaries.
-
-.. code-block:: yaml
-
-   pre_stream_bcs:
-     - pre_bounce_back
-     - cavity_z_l:
-        U: [0.0, 0.1, 0]
-
-   post_stream_bcs:
-     - post_bounce_back
-
-The expected results will show the development of a cavity flow pattern, where the fluid moves along the Z axis, influenced by the velocity set on the lower boundary. This is typical for cavity simulations, where the fluid is confined within a box.
-
-.. image:: ../_static/cavity.png
-   :align: center
-
-Cavity Flow with Wall Obstacle
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-This example simulates cavity flow using the Lattice Boltzmann Method (LBM) with a fixed obstacle (wall) in the middle of the domain. The domain resolution is 100×100×100, and non-periodic boundary conditions are enforced on all axes (XX, YY, and ZZ).
+This example simulates flow past a spherical obstacle using the Lattice Boltzmann Method (LBM). A body force drives the flow along the X axis. The domain is periodic in XX and YY, with non-periodic boundaries on the ZZ axis.
 
 .. code-block:: yaml
 
    do_domain:
      - domain:
-        bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
-        cell_dims: [ 100 , 100 , 100 ]
-        periodic:  [ false, false, false ]
+        bounds: [[0,0,0],[1.0,0.2,0.3]]
+        cell_dims: [ 800, 160, 240 ]
+        periodic: [true, true, false]
 
-No external force is applied (`Fext = [0, 0, 0]`), and the kinematic viscosity is set to `1e-4`.
+A body force of `1.3` along X drives the flow. The kinematic viscosity is `1e-3` and the relaxation time `tau` is set to `0.65`.
 
 .. code-block:: yaml
 
    set_lbm_parameters:
      - lbm_parameters:
-        Fext: [0.000000e+00,0.000000e+00,0.000000e+00]
-        nuth: 1e-4
+        Fext: [1.3, 0.0, 0.0]
+        nuth: 1e-3
+        tau: 0.65
 
-Boundary conditions are applied as follows:
-
-- **Pre-streaming**:
-
-  - `pre_bounce_back` applies bounce-back on walls.
-  - `cavity_z_l` sets a moving lid on the lower Z boundary with velocity `U = [0.1, 0.0, 0]`.
-  - `wall_bounce_back` enables bounce-back condition for the internal obstacle.
-
-- **Post-streaming**:
-
-  - `post_bounce_back` finalizes bounce-back conditions after streaming.
+The collision model is BGK:
 
 .. code-block:: yaml
 
-   pre_stream_bcs:
-     - pre_bounce_back
-     - cavity_z_l:
-        U: [0.1, 0.0, 0]
-     - wall_bounce_back
+   collision: bgk
 
-   post_stream_bcs:
-     - post_bounce_back
-
-An internal obstacle is defined using the ``set_obstacles`` field. A vertical wall is placed at the center of the domain, slightly offset in the X-direction, spanning from Z = 0 to Z = 0.08.
+A **spherical obstacle** is placed off-center in the domain:
 
 .. code-block:: yaml
 
    set_obstacles:
-     - register_solid_wall:
+     - register_solid_ball:
         id: 0
-        bounds: [[0.048,0,0],[0.052,0.1,0.08]]
+        center: [0.1001, 0.1027, 0.15023]
+        radius: 0.03
 
-The expected result is a modified cavity flow field with recirculation zones forming around the central wall obstacle, demonstrating how internal structures influence fluid dynamics in confined spaces.
+Neumann zero-velocity conditions are applied on both ZZ boundaries, and wall bounce-back handles the obstacle surface:
 
-.. image:: ../_static/cavity_wall.gif
+.. code-block:: yaml
+
+   boundary_conditions:
+     - neumann:
+        U: [0,0,0]
+        regions: [plan_xy_0, plan_xy_l]
+
+   pre_stream_bcs:
+     - wall_bounce_back
+
+.. image:: ../_static/karman.gif
    :align: center
 
+
+Flow Around Parametric Shapes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This example illustrates the use of **quadric surfaces** to define obstacles using the ``register_quadrics`` operator. Three shapes (cylinder, sphere, cone) are placed in the domain. The flow is driven by a body force along X, with periodic boundary conditions along XX and YY axes.
+
+.. code-block:: yaml
+
+   do_domain:
+     - domain:
+        bounds: [[0,0,0],[1.0,0.2,0.3]]
+        cell_dims: [ 400, 80, 120 ]
+        periodic: [true, true, false]
+
+An external force of `1.3` along X drives the flow. The kinematic viscosity is `1e-3`, and the relaxation time `tau` is set to `0.65`:
+
+.. code-block:: yaml
+
+   set_lbm_parameters:
+     - lbm_parameters:
+        Fext: [1.3, 0.0, 0.0]
+        nuth: 1e-3
+        tau: 0.65
+
+The collision model is set to BGK:
+
+.. code-block:: yaml
+
+   collision: bgk
+
+Three quadric obstacles are registered using ``register_quadrics``. Each is defined by a named quadric type and a sequence of geometric transforms (``scale`` then ``translate``):
+
+- ``cyly``: cylinder aligned along the Y axis
+- ``sphere``: ellipsoid (sphere when scale is uniform)
+- ``conez``: cone aligned along the Z axis
+
+.. code-block:: yaml
+
+   set_obstacles:
+     - register_quadrics:
+        id: 0
+        quadrics: cyly
+        transform:
+          - scale:     [ 0.05, 1,    0.05 ]
+          - translate: [ 0.15, 0.1,  0.1  ]
+     - register_quadrics:
+        id: 1
+        quadrics: sphere
+        transform:
+          - scale:     [ 0.05, 0.08, 0.05 ]
+          - translate: [ 0.35, 0.1,  0.15 ]
+     - register_quadrics:
+        id: 2
+        quadrics: conez
+        transform:
+          - scale:     [ 0.05, 0.05, 0.05 ]
+          - translate: [ 0.55, 0.1,  0.25 ]
+
+Neumann zero-velocity conditions are applied on both ZZ boundaries, and wall bounce-back is applied on obstacle surfaces:
+
+.. code-block:: yaml
+
+   boundary_conditions:
+     - neumann:
+        U: [0,0,0]
+        regions: [plan_xy_0, plan_xy_l]
+
+   pre_stream_bcs:
+     - wall_bounce_back
+
+.. image:: ../_static/quadrics.gif
+   :align: center
 
 Pressure-Driven Flow
 ^^^^^^^^^^^^^^^^^^^^
@@ -402,138 +427,105 @@ A **high-density initialization** is imposed on the far left of the domain using
    :align: center
 
 
-Karman Vortex Street
-^^^^^^^^^^^^^^^^^^^^
 
-This example simulates the Karman vortex street, a classic benchmark for flow past a bluff body using the Lattice Boltzmann Method (LBM). A spherical obstacle is placed in the domain using the ``register_solid_ball`` operator. The domain is elongated along the X axis (flow direction), with periodic boundary conditions along XX and YY axes, and non-periodic boundaries on the ZZ axis.
+
+Cavity Flow [OLD]
+^^^^^^^^^^^^^^^^^
+
+We define the simulation domain for the cavity flow using the Lattice Boltzmann Method (LBM). In this case, the resolution is set to 200×200×200, with non-periodic boundary conditions applied in all directions (XX, YY, and ZZ).
 
 .. code-block:: yaml
 
    do_domain:
      - domain:
-        bounds: [[0,0,0],[0.5,0.1,0.2]]
-        cell_dims: [ 500, 100, 200 ]
-        periodic: [false, true, true]
+        bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
+        cell_dims: [ 200 , 200 , 200 ]
+        periodic:  [ false, false, false ]
 
-No external force is applied, and the kinematic viscosity is set to `1e-4`.
+We set the Lattice Boltzmann parameters, with no external force applied (i.e., `Fext = [0, 0, 0]`) and a kinematic viscosity (`nuth`) of `1e-4`.
 
 .. code-block:: yaml
 
    set_lbm_parameters:
      - lbm_parameters:
-        Fext: [0,0,0]
+        Fext: [0.000000e+00,0.000000e+00,0.000000e+00]
         nuth: 1e-4
 
-The collision model is set to MRT for improved stability:
+The boundary conditions for the simulation are defined as follows:
 
-.. code-block:: yaml
-
-   collision: mrt
-
-A **spherical obstacle** is placed off-center in the domain using ``register_solid_ball``:
-
-.. code-block:: yaml
-
-   set_obstacles:
-     - register_solid_ball:
-        id: 0
-        center: [0.1, 0.0543, 0.1]
-        radius: 0.01323
-
-The distribution function is initialized to a uniform value of 1.0 over the entire domain, then overridden at the inlet (left face) with a higher density of 1.2 at the start of the simulation to create the initial pressure gradient:
-
-.. code-block:: yaml
-
-   set_distributions:
-     - set_distribution:
-        value: 1.0
-        bounds: [[0,0,0], [0.5,0.1,0.2]]
-
-   start_iteration:
-     - set_distribution:
-        value: 1.2
-        bounds: [[0,0,0.0], [0.02,0.1,0.2]]
-
-Wall bounce-back is applied on the obstacle surface:
+- **Pre-streaming boundary conditions**: The `pre_bounce_back` and `cavity_z_l` conditions are set, with a velocity of `U = [0.0, 0.1, 0]` applied on the lower Z boundary.
+- **Post-streaming boundary condition**: The `post_bounce_back` condition is applied on the other boundaries.
 
 .. code-block:: yaml
 
    pre_stream_bcs:
-     - wall_bounce_back
+     - pre_bounce_back
+     - cavity_z_l:
+        U: [0.0, 0.1, 0]
 
-.. image:: ../_static/karman.gif
+   post_stream_bcs:
+     - post_bounce_back
+
+The expected results will show the development of a cavity flow pattern, where the fluid moves along the Z axis, influenced by the velocity set on the lower boundary. This is typical for cavity simulations, where the fluid is confined within a box.
+
+.. image:: ../_static/cavity.png
    :align: center
 
+Cavity Flow with Wall Obstacle [OLD]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Quadrics Flow
-^^^^^^^^^^^^^
-
-This example demonstrates the use of **quadric surfaces** to define complex obstacles in the flow domain. Three different quadric shapes (cylinder, sphere, cone) are placed in sequence along the X axis using the ``register_quadrics`` operator. The flow is driven by an external body force along X, with periodic boundary conditions along XX and YY axes.
+This example simulates cavity flow using the Lattice Boltzmann Method (LBM) with a fixed obstacle (wall) in the middle of the domain. The domain resolution is 100×100×100, and non-periodic boundary conditions are enforced on all axes (XX, YY, and ZZ).
 
 .. code-block:: yaml
 
    do_domain:
      - domain:
-        bounds: [[0,0,0],[1.0,0.2,0.3]]
-        cell_dims: [ 400, 80, 120 ]
-        periodic: [true, true, false]
+        bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
+        cell_dims: [ 100 , 100 , 100 ]
+        periodic:  [ false, false, false ]
 
-An external force of `1.3` along X drives the flow. The kinematic viscosity is `1e-3`, and the relaxation time `tau` is set to `0.65`:
+No external force is applied (`Fext = [0, 0, 0]`), and the kinematic viscosity is set to `1e-4`.
 
 .. code-block:: yaml
 
    set_lbm_parameters:
      - lbm_parameters:
-        Fext: [1.3, 0.0, 0.0]
-        nuth: 1e-3
-        tau: 0.65
+        Fext: [0.000000e+00,0.000000e+00,0.000000e+00]
+        nuth: 1e-4
 
-The collision model is set to BGK:
+Boundary conditions are applied as follows:
+
+- **Pre-streaming**:
+
+  - `pre_bounce_back` applies bounce-back on walls.
+  - `cavity_z_l` sets a moving lid on the lower Z boundary with velocity `U = [0.1, 0.0, 0]`.
+  - `wall_bounce_back` enables bounce-back condition for the internal obstacle.
+
+- **Post-streaming**:
+
+  - `post_bounce_back` finalizes bounce-back conditions after streaming.
 
 .. code-block:: yaml
 
-   collision: bgk
+   pre_stream_bcs:
+     - pre_bounce_back
+     - cavity_z_l:
+        U: [0.1, 0.0, 0]
+     - wall_bounce_back
 
-Three quadric obstacles are registered using ``register_quadrics``. Each is defined by a named quadric type and a sequence of geometric transforms (``scale`` then ``translate``):
+   post_stream_bcs:
+     - post_bounce_back
 
-- ``cyly``: cylinder aligned along the Y axis
-- ``sphere``: ellipsoid (sphere when scale is uniform)
-- ``conez``: cone aligned along the Z axis
+An internal obstacle is defined using the ``set_obstacles`` field. A vertical wall is placed at the center of the domain, slightly offset in the X-direction, spanning from Z = 0 to Z = 0.08.
 
 .. code-block:: yaml
 
    set_obstacles:
-     - register_quadrics:
+     - register_solid_wall:
         id: 0
-        quadrics: cyly
-        transform:
-          - scale:     [ 0.05, 1,    0.05 ]
-          - translate: [ 0.15, 0.1,  0.1  ]
-     - register_quadrics:
-        id: 1
-        quadrics: sphere
-        transform:
-          - scale:     [ 0.05, 0.08, 0.05 ]
-          - translate: [ 0.35, 0.1,  0.15 ]
-     - register_quadrics:
-        id: 2
-        quadrics: conez
-        transform:
-          - scale:     [ 0.05, 0.05, 0.05 ]
-          - translate: [ 0.55, 0.1,  0.25 ]
+        bounds: [[0.048,0,0],[0.052,0.1,0.08]]
 
-Neumann zero-velocity conditions are applied on both ZZ boundaries, and wall bounce-back is applied on obstacle surfaces:
+The expected result is a modified cavity flow field with recirculation zones forming around the central wall obstacle, demonstrating how internal structures influence fluid dynamics in confined spaces.
 
-.. code-block:: yaml
-
-   boundary_conditions:
-     - neumann:
-        U: [0,0,0]
-        regions: [plan_xy_0, plan_xy_l]
-
-   pre_stream_bcs:
-     - wall_bounce_back
-
-.. image:: ../_static/quadrics.gif
+.. image:: ../_static/cavity_wall.gif
    :align: center
-
