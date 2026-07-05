@@ -11,7 +11,7 @@ We define the simulation domain for the Lattice Boltzmann Method (LBM). In this 
    do_domain:
      - domain:
         bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
-        grid_dims: [ 30 , 30 , 30 ]
+        cell_dims: [ 30 , 30 , 30 ]
         periodic:  [ true, true, false ]
 
 We apply a Neumann boundary condition on both Z boundaries at once, via the ``regions`` parameter (setting to `(ux = 0, uy = 0, uz = 0)`):
@@ -62,7 +62,7 @@ We define the simulation domain for the Couette flow using the Lattice Boltzmann
    do_domain:
      - domain:
         bounds: [[0,0,0],[0.1,0.1,0.1]]
-        grid_dims: [ 100 , 100 , 100 ]
+        cell_dims: [ 100 , 100 , 100 ]
         periodic: [true, true, false]
 
 We set the Lattice Boltzmann parameters with a kinematic viscosity (`nuth`) of `1e-2` and no external force applied (i.e., `Fext = [0, 0, 0]`).
@@ -74,7 +74,7 @@ We set the Lattice Boltzmann parameters with a kinematic viscosity (`nuth`) of `
         Fext: [0.000000e+00,0.000000e+00,0.000000e+00]
         nuth: 1e-2
 
-A Neumann boundary condition is applied on the upper Z boundary (`plan_xy_l`), with the velocity set to `U = [0.001, 0, 0]`.
+A Neumann boundary condition is applied on the upper Z boundary (`plan_xy_l`), with the velocity set to `U = [0.001, 0, 0]`, and a zero-velocity Neumann condition is applied on the lower Z boundary (`plan_xy_0`).
 
 .. code-block:: yaml
 
@@ -82,6 +82,9 @@ A Neumann boundary condition is applied on the upper Z boundary (`plan_xy_l`), w
      - neumann:
         U: [0.001,0,0]
         regions: [plan_xy_l]
+     - neumann:
+        U: [0,0,0]
+        regions: [plan_xy_0]
 
 The expected results will show a linear velocity profile along the Z axis, where the velocity increases linearly from the stationary bottom boundary to the top boundary with a constant shear rate, characteristic of Couette flow.
 
@@ -98,17 +101,17 @@ The velocity profile along the Z axis, once the flow is fully developed, is show
 Lid-Driven Cavity Flow
 ^^^^^^^^^^^^^^^^^^^^^^
 
-This example simulates a lid-driven cavity flow using the Lattice Boltzmann Method (LBM), set up to reach a Reynolds number of 1000. The domain resolution is 200×10×200, with bounds expressed in meters, and periodic boundary conditions applied along the YY axis, and non-periodic boundaries on the XX and ZZ axes.
+This example simulates a lid-driven cavity flow using the Lattice Boltzmann Method (LBM), set up to reach a Reynolds number of 1000. The domain resolution is 400×10×400, with bounds expressed in meters, and periodic boundary conditions applied along the YY axis, and non-periodic boundaries on the XX and ZZ axes.
 
 .. code-block:: yaml
 
    do_domain:
      - domain:
-        bounds:    [ [0 m, 0 m, 0 m],[0.01 m, 0.0005 m, 0.01 m] ]
-        grid_dims: [ 200 , 10 , 200 ]
+        bounds:    [ [0 m, 0 m, 0 m],[0.01 m, 0.00025 m, 0.01 m] ]
+        cell_dims: [ 400 , 10 , 400 ]
         periodic:  [ false, true, false ]
 
-No external force is applied (`Fext = [0, 0, 0]`), the kinematic viscosity is set to `1e-5 m2.s-1`, and the celerity (speed of sound used to convert real units to LBM units) is set to `10`.
+No external force is applied (`Fext = [0, 0, 0]`), the kinematic viscosity is set to `1e-5 m2.s-1`, the relaxation time `tau` is set to `0.7`, and the celerity (speed of sound used to convert real units to LBM units) is set to `10`.
 
 .. code-block:: yaml
 
@@ -116,23 +119,26 @@ No external force is applied (`Fext = [0, 0, 0]`), the kinematic viscosity is se
      - lbm_parameters:
         Fext: [0,0,0]
         nuth: 1e-5  # m2.s-1
+        tau: 0.7
         celerity: 10
 
-Boundary conditions are applied as follows:
-
-- **Pre-streaming**: `pre_bounce_back` applies bounce-back on the domain walls.
-- **Post-streaming**: `post_bounce_back` finalizes bounce-back, and `lid_driven_cavity` enforces a moving lid with velocity `U = [1, 0.0, 0]` (Re = 1000) on the upper XY plane (`plan_xy_l`). The `lid_driven_cavity` operator must be called after the bounce-back step.
+The collision model is set to BGK:
 
 .. code-block:: yaml
 
-   pre_stream_bcs:
-     - pre_bounce_back
+   collision: bgk
+
+Boundary conditions are applied using `lid_driven_cavity` in ``post_stream_bcs`` only. The moving lid with velocity `U = [1, 0, 0]` (Re = 1000) is applied on the upper XY plane (`plan_xy_l`). The three remaining non-periodic walls (`plan_xy_0`, `plan_yz_0`, `plan_yz_l`) are enforced as stationary walls by applying `lid_driven_cavity` with `U = [0, 0, 0]`.
+
+.. code-block:: yaml
 
    post_stream_bcs:
-     - post_bounce_back
-     - lid_driven_cavity:  ## needs to be called after bounce back
+     - lid_driven_cavity:
         U: [1, 0.0, 0]  ## Re : 1000
         regions: [plan_xy_l]
+     - lid_driven_cavity:
+        U: [0, 0.0, 0]
+        regions: [plan_xy_0, plan_yz_0, plan_yz_l]
 
 The expected result is a recirculating vortex driven by the moving lid at the top of the cavity, characteristic of the classical lid-driven cavity benchmark.
 
@@ -156,7 +162,7 @@ We define the simulation domain for the cavity flow using the Lattice Boltzmann 
    do_domain:
      - domain:
         bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
-        grid_dims: [ 200 , 200 , 200 ]
+        cell_dims: [ 200 , 200 , 200 ]
         periodic:  [ false, false, false ]
 
 We set the Lattice Boltzmann parameters, with no external force applied (i.e., `Fext = [0, 0, 0]`) and a kinematic viscosity (`nuth`) of `1e-4`.
@@ -198,7 +204,7 @@ This example simulates cavity flow using the Lattice Boltzmann Method (LBM) with
    do_domain:
      - domain:
         bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
-        grid_dims: [ 100 , 100 , 100 ]
+        cell_dims: [ 100 , 100 , 100 ]
         periodic:  [ false, false, false ]
 
 No external force is applied (`Fext = [0, 0, 0]`), and the kinematic viscosity is set to `1e-4`.
@@ -233,12 +239,13 @@ Boundary conditions are applied as follows:
    post_stream_bcs:
      - post_bounce_back
 
-An internal obstacle is defined using the `set_obstacles` field. A vertical wall is placed at the center of the domain, slightly offset in the X-direction, spanning from Z = 0 to Z = 0.08.
+An internal obstacle is defined using the ``set_obstacles`` field. A vertical wall is placed at the center of the domain, slightly offset in the X-direction, spanning from Z = 0 to Z = 0.08.
 
 .. code-block:: yaml
 
    set_obstacles:
-     - set_wall:
+     - register_solid_wall:
+        id: 0
         bounds: [[0.048,0,0],[0.052,0.1,0.08]]
 
 The expected result is a modified cavity flow field with recirculation zones forming around the central wall obstacle, demonstrating how internal structures influence fluid dynamics in confined spaces.
@@ -257,7 +264,7 @@ This simulation demonstrates the effect of a strong pressure or density differen
    do_domain:
      - domain:
         bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
-        grid_dims: [ 100 , 100 , 100 ]
+        cell_dims: [ 100 , 100 , 100 ]
         periodic:  [ false, true, false ]
 
 No external force is applied. The kinematic viscosity is set to `1e-4`.
@@ -285,18 +292,20 @@ Two vertical **internal walls** are added near the center of the domain, one at 
 .. code-block:: yaml
 
    set_obstacles:
-     - set_wall:
+     - register_solid_wall:
+        id: 0
         bounds: [[0.048,0,0.06],[0.052,0.1,0.1]]
-     - set_wall:
+     - register_solid_wall:
+        id: 1
         bounds: [[0.048,0,0],[0.052,0.1,0.04]]
 
-A high-density region is initialized on the left-hand side using `init_distributions` with a coefficient of `1.5`. This creates a **pressure difference** between the left and right sides of the domain, acting as the flow-driving mechanism.
+A high-density region is initialized on the left-hand side using ``set_distribution`` with a coefficient of `1.5`. This creates a **pressure difference** between the left and right sides of the domain, acting as the flow-driving mechanism.
 
 .. code-block:: yaml
 
    set_distributions:
-     - init_distributions:
-        tmp_coeff: 1.5
+     - set_distribution:
+        value: 1.5
         bounds: [[0,0,0], [0.048,1,1]]
 
 The **post-streaming boundary condition** is the standard `post_bounce_back`.
@@ -323,7 +332,7 @@ This simulation demonstrates pressure-driven flow across a complex internal stru
    do_domain:
      - domain:
         bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
-        grid_dims: [ 400 , 400 , 400 ]
+        cell_dims: [ 400 , 400 , 400 ]
         periodic:  [false, true, false ]
 
 No external force is applied (`Fext = [0,0,0]`), and the kinematic viscosity is set to `1e-4`.
@@ -348,30 +357,38 @@ A **complex system of internal obstacles (walls)** is defined to create a tortuo
 .. code-block:: yaml
 
    set_obstacles:
-     - set_wall:
+     - register_solid_wall:
+        id: 0
         bounds: [[0.024,0,0.06],[0.026,0.1,0.1]]
-     - set_wall:
+     - register_solid_wall:
+        id: 1
         bounds: [[0.024,0,0],[0.026,0.1,0.04]]
-     - set_wall:
+     - register_solid_wall:
+        id: 2
         bounds: [[0.034,0,0.025],[0.036,0.1,0.075]]
-     - set_wall:
+     - register_solid_wall:
+        id: 3
         bounds: [[0.049,0,0.06],[0.051,0.1,0.1]]
-     - set_wall:
+     - register_solid_wall:
+        id: 4
         bounds: [[0.049,0,0],[0.051,0.1,0.04]]
-     - set_wall:
+     - register_solid_wall:
+        id: 5
         bounds: [[0.068,0,0.0355],[0.072,0.1,0.065]]
-     - set_wall:
+     - register_solid_wall:
+        id: 6
         bounds: [[0.085,0,0.02],[0.1,0.1,0.03]]
-     - set_wall:
+     - register_solid_wall:
+        id: 7
         bounds: [[0.085,0,0.07],[0.1,0.1,0.08]]
 
-A **high-density initialization** is imposed on the far left of the domain using `init_distributions` with a `tmp_coeff` of 1.5. This sets up a large **pressure difference** that drives the fluid flow.
+A **high-density initialization** is imposed on the far left of the domain using ``set_distribution`` with a value of 1.5. This sets up a large **pressure difference** that drives the fluid flow.
 
 .. code-block:: yaml
 
    set_distributions:
-     - init_distributions:
-        tmp_coeff: 1.5
+     - set_distribution:
+        value: 1.5
         bounds: [[0,0,0], [0.024,1,1]]
 
 **Post-streaming bounce-back** is applied to maintain no-slip conditions at the boundaries:
@@ -382,5 +399,141 @@ A **high-density initialization** is imposed on the far left of the domain using
      - post_bounce_back
 
 .. image:: ../_static/pression.gif
+   :align: center
+
+
+Karman Vortex Street
+^^^^^^^^^^^^^^^^^^^^
+
+This example simulates the Karman vortex street, a classic benchmark for flow past a bluff body using the Lattice Boltzmann Method (LBM). A spherical obstacle is placed in the domain using the ``register_solid_ball`` operator. The domain is elongated along the X axis (flow direction), with periodic boundary conditions along XX and YY axes, and non-periodic boundaries on the ZZ axis.
+
+.. code-block:: yaml
+
+   do_domain:
+     - domain:
+        bounds: [[0,0,0],[0.5,0.1,0.2]]
+        cell_dims: [ 500, 100, 200 ]
+        periodic: [false, true, true]
+
+No external force is applied, and the kinematic viscosity is set to `1e-4`.
+
+.. code-block:: yaml
+
+   set_lbm_parameters:
+     - lbm_parameters:
+        Fext: [0,0,0]
+        nuth: 1e-4
+
+The collision model is set to MRT for improved stability:
+
+.. code-block:: yaml
+
+   collision: mrt
+
+A **spherical obstacle** is placed off-center in the domain using ``register_solid_ball``:
+
+.. code-block:: yaml
+
+   set_obstacles:
+     - register_solid_ball:
+        id: 0
+        center: [0.1, 0.0543, 0.1]
+        radius: 0.01323
+
+The distribution function is initialized to a uniform value of 1.0 over the entire domain, then overridden at the inlet (left face) with a higher density of 1.2 at the start of the simulation to create the initial pressure gradient:
+
+.. code-block:: yaml
+
+   set_distributions:
+     - set_distribution:
+        value: 1.0
+        bounds: [[0,0,0], [0.5,0.1,0.2]]
+
+   start_iteration:
+     - set_distribution:
+        value: 1.2
+        bounds: [[0,0,0.0], [0.02,0.1,0.2]]
+
+Wall bounce-back is applied on the obstacle surface:
+
+.. code-block:: yaml
+
+   pre_stream_bcs:
+     - wall_bounce_back
+
+.. image:: ../_static/karman.gif
+   :align: center
+
+
+Quadrics Flow
+^^^^^^^^^^^^^
+
+This example demonstrates the use of **quadric surfaces** to define complex obstacles in the flow domain. Three different quadric shapes (cylinder, sphere, cone) are placed in sequence along the X axis using the ``register_quadrics`` operator. The flow is driven by an external body force along X, with periodic boundary conditions along XX and YY axes.
+
+.. code-block:: yaml
+
+   do_domain:
+     - domain:
+        bounds: [[0,0,0],[1.0,0.2,0.3]]
+        cell_dims: [ 400, 80, 120 ]
+        periodic: [true, true, false]
+
+An external force of `1.3` along X drives the flow. The kinematic viscosity is `1e-3`, and the relaxation time `tau` is set to `0.65`:
+
+.. code-block:: yaml
+
+   set_lbm_parameters:
+     - lbm_parameters:
+        Fext: [1.3, 0.0, 0.0]
+        nuth: 1e-3
+        tau: 0.65
+
+The collision model is set to BGK:
+
+.. code-block:: yaml
+
+   collision: bgk
+
+Three quadric obstacles are registered using ``register_quadrics``. Each is defined by a named quadric type and a sequence of geometric transforms (``scale`` then ``translate``):
+
+- ``cyly``: cylinder aligned along the Y axis
+- ``sphere``: ellipsoid (sphere when scale is uniform)
+- ``conez``: cone aligned along the Z axis
+
+.. code-block:: yaml
+
+   set_obstacles:
+     - register_quadrics:
+        id: 0
+        quadrics: cyly
+        transform:
+          - scale:     [ 0.05, 1,    0.05 ]
+          - translate: [ 0.15, 0.1,  0.1  ]
+     - register_quadrics:
+        id: 1
+        quadrics: sphere
+        transform:
+          - scale:     [ 0.05, 0.08, 0.05 ]
+          - translate: [ 0.35, 0.1,  0.15 ]
+     - register_quadrics:
+        id: 2
+        quadrics: conez
+        transform:
+          - scale:     [ 0.05, 0.05, 0.05 ]
+          - translate: [ 0.55, 0.1,  0.25 ]
+
+Neumann zero-velocity conditions are applied on both ZZ boundaries, and wall bounce-back is applied on obstacle surfaces:
+
+.. code-block:: yaml
+
+   boundary_conditions:
+     - neumann:
+        U: [0,0,0]
+        regions: [plan_xy_0, plan_xy_l]
+
+   pre_stream_bcs:
+     - wall_bounce_back
+
+.. image:: ../_static/quadrics.gif
    :align: center
 

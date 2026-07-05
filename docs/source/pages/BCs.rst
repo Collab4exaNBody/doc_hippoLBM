@@ -6,7 +6,11 @@ In LBM simulations, boundary conditions must be defined within the ``boundary_co
 Neumann conditions
 ^^^^^^^^^^^^^^^^^^
 
-Both Neumann boundary conditions described below are applied through a single operator, ``neumann``, which can be applied on one or several boundary planes at once via the ``regions`` parameter (allowed values: ``plan_xy_0``, ``plan_xy_l``). The same prescribed velocity ``U`` is enforced on every region listed.
+The Neumann boundary conditions below are applied through a single operator, ``neumann``, which can be applied on one or several boundary planes at once via the ``regions`` parameter. The same prescribed velocity ``U`` is enforced on every region listed. Allowed values for ``regions``:
+
+- ``plan_xy_0`` / ``plan_xy_l``: Z = 0 / Z = lz planes
+- ``plan_yz_0`` / ``plan_yz_l``: X = 0 / X = lx planes
+- ``plan_xz_0`` / ``plan_xz_l``: Y = 0 / Y = ly planes
 
 YAML example:
 
@@ -107,6 +111,66 @@ YAML example:
      - neumann:
         U: [0.001,0,0]
         regions: [plan_xy_l]
+
+Neumann X 0
+-----------
+
+- Operator Name: ``neumann`` with ``regions: [plan_yz_0]``
+- Description: This operator enforces a Neumann (Zou-He) boundary condition at x = 0. The prescribed velocity ``U{ux,uy,uz}`` is imposed via the equilibrium reconstruction method.
+
+YAML example:
+
+.. code-block:: yaml
+
+   boundary_conditions:
+     - neumann:
+        U: [0.001,0,0]
+        regions: [plan_yz_0]
+
+Neumann X l
+-----------
+
+- Operator Name: ``neumann`` with ``regions: [plan_yz_l]``
+- Description: This operator enforces a Neumann (Zou-He) boundary condition at x = lx.
+
+YAML example:
+
+.. code-block:: yaml
+
+   boundary_conditions:
+     - neumann:
+        U: [0.001,0,0]
+        regions: [plan_yz_l]
+
+Neumann Y 0
+-----------
+
+- Operator Name: ``neumann`` with ``regions: [plan_xz_0]``
+- Description: This operator enforces a Neumann (Zou-He) boundary condition at y = 0.
+
+YAML example:
+
+.. code-block:: yaml
+
+   boundary_conditions:
+     - neumann:
+        U: [0,0.001,0]
+        regions: [plan_xz_0]
+
+Neumann Y l
+-----------
+
+- Operator Name: ``neumann`` with ``regions: [plan_xz_l]``
+- Description: This operator enforces a Neumann (Zou-He) boundary condition at y = ly.
+
+YAML example:
+
+.. code-block:: yaml
+
+   boundary_conditions:
+     - neumann:
+        U: [0,0.001,0]
+        regions: [plan_xz_l]
 
 Bounce Back
 ^^^^^^^^^^^
@@ -214,3 +278,7 @@ YAML example:
     - lid_driven_cavity:  ## needs to be called after bounce back
        U: [0.1, 0.0, 0]
        regions: [plan_xy_l]
+
+.. note::
+
+   Obstacle operators (``register_solid_wall``, ``register_solid_ball``, ``register_quadrics``) are documented in the :doc:`Obstacles` page.

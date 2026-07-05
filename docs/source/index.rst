@@ -13,6 +13,7 @@
    pages/Install.rst
    pages/Kernels.rst
    pages/BCs.rst
+   pages/Obstacles.rst
    pages/Examples.rst
    pages/Performance.rst
 

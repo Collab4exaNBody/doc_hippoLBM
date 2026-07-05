@@ -145,7 +145,7 @@ YAML example:
    do_domain:
      - domain:
         bounds:    [ [0,0,0],[0.1,0.1,0.1]]
-        grid_dims: [ 30 , 30 , 30 ]
+        cell_dims: [ 30 , 30 , 30 ]
         periodic:  [ true, true, false]
 
    set_lbm_parameters:
