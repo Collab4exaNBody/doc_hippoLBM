@@ -333,6 +333,10 @@ A high-density region is initialized on the left-hand side using ``set_distribut
         value: 1.5
         bounds: [[0,0,0], [0.048,1,1]]
 
+.. warning::
+
+   The ``value`` parameter is applied uniformly to **all** distribution function components :math:`f_i`. This is a raw initialization of the distributions, not a thermodynamically consistent density initialization.
+
 The **post-streaming boundary condition** is the standard `post_bounce_back`.
 
 .. code-block:: yaml
@@ -416,6 +420,10 @@ A **high-density initialization** is imposed on the far left of the domain using
         value: 1.5
         bounds: [[0,0,0], [0.024,1,1]]
 
+.. warning::
+
+   The ``value`` parameter is applied uniformly to **all** distribution function components :math:`f_i`. This is a raw initialization of the distributions, not a thermodynamically consistent density initialization.
+
 **Post-streaming bounce-back** is applied to maintain no-slip conditions at the boundaries:
 
 .. code-block:: yaml
@@ -425,8 +433,6 @@ A **high-density initialization** is imposed on the far left of the domain using
 
 .. image:: ../_static/pression.gif
    :align: center
-
-
 
 
 Cavity Flow [OLD]

@@ -92,3 +92,7 @@ YAML example:
         transform:
           - scale:     [ 0.05, 0.05, 0.05 ]
           - translate: [ 0.55, 0.1,  0.25 ]
+
+.. image:: ../_static/quadrics.png
+   :align: center
+   :width: 80%
