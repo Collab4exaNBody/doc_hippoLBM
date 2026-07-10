@@ -61,18 +61,19 @@ We define the simulation domain for the Couette flow using the Lattice Boltzmann
 
    do_domain:
      - domain:
-        bounds: [[0,0,0],[0.1,0.1,0.1]]
+        bounds: [[0,0,0],[0.1 m,0.1 m,0.1 m]]
         cell_dims: [ 100 , 100 , 100 ]
         periodic: [true, true, false]
 
-We set the Lattice Boltzmann parameters with a kinematic viscosity (`nuth`) of `1e-2` and no external force applied (i.e., `Fext = [0, 0, 0]`).
+We set the Lattice Boltzmann parameters with a kinematic viscosity (`nuth`) of `1e-3 m2/s`, a relaxation time `tau` of `0.7`, and no external force applied (i.e., `Fext = [0, 0, 0]`).
 
 .. code-block:: yaml
 
    set_lbm_parameters:
      - lbm_parameters:
-        Fext: [0.000000e+00,0.000000e+00,0.000000e+00]
-        nuth: 1e-2
+        Fext: [0,0,0]
+        nuth: 1e-3  # m2/s
+        tau: 0.7
 
 A Neumann boundary condition is applied on the upper Z boundary (`plan_xy_l`), with the velocity set to `U = [0.001, 0, 0]`, and a zero-velocity Neumann condition is applied on the lower Z boundary (`plan_xy_0`).
 
@@ -86,12 +87,31 @@ A Neumann boundary condition is applied on the upper Z boundary (`plan_xy_l`), w
         U: [0,0,0]
         regions: [plan_xy_0]
 
-The expected results will show a linear velocity profile along the Z axis, where the velocity increases linearly from the stationary bottom boundary to the top boundary with a constant shear rate, characteristic of Couette flow.
+Two analysis operators are configured: ``plane_velocity_profile`` exports the average velocity profile along Z, and ``plot_line_velocity`` samples the velocity along a line probe crossing the domain from Z = 0 to Z = 0.1. Both run every 300 iterations.
+
+.. code-block:: yaml
+
+   analysis:
+     - plane_velocity_profile:
+        dimension: Z
+     - plot_line_velocity:
+        line: [[0.05,0.05,0],[0.05,0.05,0.1]]
+
+   global:
+      simulation_paraview_freq: 100
+      simulation_analysis_freq: 300
+      simulation_end_iteration: 3000
+
+The expected results will show a linear velocity profile along the Z axis: 
 
 .. image:: ../_static/couette.gif
    :align: center
 
-The velocity profile along the Z axis, once the flow is fully developed, is shown below:
+The velocity profile along the Z axis, once the flow is fully developed, can be plotted using the provided post-processing script:
+
+.. code-block:: bash
+
+   python3 ../hippoLBM/script/profile/plot_line_couette.py CouetteTestDir/Profile --nu 1e-3 --dt 6.666667e-05
 
 .. image:: ../_static/couette_profile_0000003000_velocity_bounds.png
    :align: center
