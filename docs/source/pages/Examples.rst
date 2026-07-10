@@ -33,12 +33,21 @@ An external force of `(9.512485×10−5,0.0,0.0)` is applied to drive the flow. 
         Fext: [9.512485e-05,0.000000e+00,0.000000e+00]
         nuth: 1e-3
 
-The global parameters for this simulation include output frequency and the total number of iterations:
+A ``plot_line_velocity`` analysis operator samples the velocity along a line probe at the center of the domain every 300 iterations. A ``plane_velocity_profile`` checker also exports the average Z profile:
 
 .. code-block:: yaml
 
+   analysis:
+     - plot_line_velocity:
+        line: [[0.05,0.05,0],[0.05,0.05,0.1]]
+
+   checker:
+     - plane_velocity_profile:
+        dimension: Z
+
    global:
       simulation_paraview_freq: 100
+      simulation_analysis_freq: 300
       simulation_end_iteration: 3000
 
 The expected results should show the development of a fully developed Poiseuille flow profile along the Z axis, with velocity increasing towards the center and decreasing near the boundaries due to the imposed Neumann conditions.
@@ -46,7 +55,11 @@ The expected results should show the development of a fully developed Poiseuille
 .. image:: ../_static/lbmpoiseuille.gif
    :align: center
 
-The velocity profile along the Z axis, once the flow is fully developed, is shown below:
+The velocity profile along Z, compared against the analytical transient Poiseuille solution, can be plotted using the provided post-processing script:
+
+.. code-block:: bash
+
+   python3 ../hippoLBM/script/profile/plot_line_poiseuille.py PoiseuilleTestDir/Profile
 
 .. image:: ../_static/poiseuille_profile_0000003001_velocity_bounds.png
    :align: center
