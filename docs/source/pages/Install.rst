@@ -182,6 +182,9 @@ Or just on your local environment:
 
   alias hippoLBM=$PWD/hippoLBM
 
+Instalation With Spack
+^^^^^^^^^^^^^^^^^^^^^^
+
 Installing Spack
 ----------------
 
