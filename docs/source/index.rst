@@ -15,6 +15,7 @@
    pages/BCs.rst
    pages/Obstacles.rst
    pages/Examples.rst
+   pages/Structures.rst
    pages/Performance.rst
 
 
