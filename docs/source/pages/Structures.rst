@@ -320,3 +320,31 @@ It provides:
 - ``operator()(idx)`` → ``Point3D`` from a flat index
 - ``contains(p)``: checks whether a point lies inside the box
 - ``intersect(a, b)``: checks whether two boxes overlap
+
+Operator Slot Summary
+^^^^^^^^^^^^^^^^^^^^^
+
+The table below lists all major structures exchanged between operators through the Onika slot system, with their canonical slot name as used in the YAML configuration.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 28 18 54
+
+   * - C++ type
+     - Slot name
+     - Description
+   * - ``LBMDomain<Q>``
+     - ``domain``
+     - Top-level domain: grid, bounds, MPI decomposition, ghost manager (see `LBMDomain`_)
+   * - ``LBMFields<Q>``
+     - ``fields``
+     - Per-node data arrays: distribution functions :math:`f_i`, density :math:`\rho`, flux :math:`\rho\mathbf{u}`, obstacle markers (see `Fields and FieldView`_)
+   * - ``LBMGridRegion``
+     - ``grid_region``
+     - Traversal index arrays built by ``build_traversal``: ``real_``, ``inside_``, ``extend_``, face planes (``plane_xy_0_``, ``plane_xz_0_``, …)
+   * - ``LBMParameters``
+     - ``Params``
+     - LBM simulation parameters computed by ``lbm_parameters``: ``tau_``, ``nu_``, ``dtLB_``, ``celerity_``, ``Fext_``, ``avg_rho_``
+   * - ``Obstacles``
+     - ``obstacles``
+     - Collection of registered solid shapes (``Ball``, ``Wall``, ``Quadric``) used to mark obstacle nodes in ``LBMFields::obst_``

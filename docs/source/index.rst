@@ -11,6 +11,7 @@
 
    pages/Introduction.rst
    pages/Install.rst
+   pages/NumericalScheme.rst
    pages/Kernels.rst
    pages/BCs.rst
    pages/Obstacles.rst
