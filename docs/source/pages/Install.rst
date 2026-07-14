@@ -44,7 +44,11 @@ The first step involves the installation of ``yaml-cpp``, which can be achieved 
          cd ${CURRENT_HOME}
          export PATH_TO_YAML=$PWD/install-yaml-cpp
 
-Please ensure to remove `yaml-cpp` and `build-yaml-cpp`. When installing ``Onika``, and ``hippoLBM``, remember to add the following to your cmake command: ``-DCMAKE_PREFIX_PATH=${PATH_TO_YAML}``.
+After the build, you can remove the source and build directories (``yaml-cpp/`` and ``build-yaml-cpp/``).
+
+.. note::
+
+   If you installed ``yaml-cpp`` via the **cmake** tab above, the variable ``PATH_TO_YAML`` is now set. You must append ``-DCMAKE_PREFIX_PATH=${PATH_TO_YAML}`` to every subsequent ``cmake`` command (Onika and HippoLBM). This is not needed if you used ``spack`` or ``apt-get``.
 
 To proceed with the installation, your system must meet the minimum prerequisites (``MPI`` and ``Onika``). The next step involves the installation of ``Onika``:
 
@@ -84,7 +88,7 @@ To proceed with the installation, your system must meet the minimum prerequisite
          module load gnu/13.2.0 cuda/12.4 mpi/openmpi/4.1.6 cmake/3.29.6
          cd $CCCSCRATCHDIR
          export CURRENT_HOME=$PWD
-         // copy onika v1.1.0
+         # copy onika v1.1.0 into ${CURRENT_HOME}/onika
          mkdir ${CURRENT_HOME}/build-onika && cd ${CURRENT_HOME}/build-onika
          cmake ${CURRENT_HOME}/onika -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${CURRENT_HOME}/install-onika -DONIKA_BUILD_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=80
          make install -j 10
@@ -96,7 +100,13 @@ HippoLBM Installation
 
 To install ``HippoLBM``, follow these steps:
 
-Make sure the ``onika_DIR`` environment variable is still set to your Onika installation path (set in the previous step). Clone the ``HippoLBM`` repository using the command:
+.. warning::
+
+   Make sure the ``onika_DIR`` environment variable is set to your Onika installation path before running CMake. If you opened a new shell since installing Onika, re-export it:
+
+   .. code-block:: bash
+
+      export onika_DIR=/path/to/install-onika Clone the ``HippoLBM`` repository using the command:
 
 .. code-block:: bash
 		
@@ -108,17 +118,27 @@ Create a directory named build-hippoLBM and navigate into it:
 		
    mkdir build-hippoLBM && cd build-hippoLBM
 
-Run CMake to configure the HippoLBM build:
+Run CMake to configure the HippoLBM build from inside ``build-hippoLBM/``:
 
 .. tabs::
 
-   .. tab:: cmake Minimal
+   .. tab:: CPU
 
       .. code-block:: bash
-		
-         cmake ../hippoLBM -DCMAKE_BUILD_TYPE=Release 
+
+         cmake ../hippoLBM -DCMAKE_BUILD_TYPE=Release
          make -j 4
-         source bin/setup-env.sh
+         source bin/setup-env.sh   # must be run from build-hippoLBM/
+
+   .. tab:: GPU
+
+      Replace ``86`` with the compute capability of your GPU (e.g. ``80`` for A100, ``89`` for L40).
+
+      .. code-block:: bash
+
+         cmake ../hippoLBM -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=86
+         make -j 4
+         source bin/setup-env.sh   # must be run from build-hippoLBM/
 
 
 Launch examples / ctest
@@ -150,8 +170,9 @@ YAML example:
 
    set_lbm_parameters:
      - lbm_parameters:
-        Fext: [9.512485e-05,0.000000e+00,0.000000e+00]
-        nuth: 1e-3
+        Fext: [1.0e-3, 0.0, 0.0]   # body force in physical units
+        nuth: 1e-3                  # kinematic viscosity [m²/s]
+        tau:  0.7                   # relaxation time
 
    boundary_conditions:
      - neumann:
@@ -205,9 +226,15 @@ First, get the ``spack`` repository in the hippoLBM directory and add it to spac
    spack repo add spack-repos
 
 
-Second, install ``HippoLBM`` (this command will install ``cmake``, ``yaml-cpp``, and ``onika``).
+Second, install ``HippoLBM`` (this command will also install ``cmake``, ``yaml-cpp``, and ``onika`` as dependencies):
 
 .. code-block:: bash
 
   spack install hippolbm
+
+Then load the package to make the ``hippoLBM`` executable available in your shell:
+
+.. code-block:: bash
+
+  spack load hippolbm
 
