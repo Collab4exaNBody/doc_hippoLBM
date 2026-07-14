@@ -143,23 +143,3 @@ YAML example:
        tol: 1e-6
        vmin: 0
        vmax: 0.1
-
-Plane Velocity Profile
------------------------
-
-- Operator name: ``plane_velocity_profile``
-- Description: This operator computes, for each plane perpendicular to a chosen dimension (X, Y or Z), the average, minimum and maximum velocity norm over the fluid points of that plane, and dumps the result to a CSV file (columns: ``position avg min max``).
-- Parameters:
-
-  - ``dimension``: The dimension along which the profile is computed: ``"X"``, ``"Y"`` or ``"Z"``.
-  - ``dump_file``: Name of the CSV file, formatted with the current timestep (default: ``profile_%010d.csv``).
-  - ``output_directory``: Base output directory for the profile files (default: ``hippoLBMOutputDir``).
-
-YAML example:
-
-.. code-block:: yaml
-
-  checker:
-    - plane_velocity_profile:
-       dimension: "Z"
-       dump_file: "profile_%010d.csv"

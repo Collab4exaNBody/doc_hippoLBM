@@ -13,6 +13,7 @@
    pages/Install.rst
    pages/NumericalScheme.rst
    pages/Kernels.rst
+   pages/PostProcessing.rst
    pages/BCs.rst
    pages/Obstacles.rst
    pages/Examples.rst
