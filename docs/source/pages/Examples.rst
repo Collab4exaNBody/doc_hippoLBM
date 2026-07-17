@@ -362,6 +362,14 @@ Two vertical **internal walls** are added near the center of the domain, one at 
      - register_solid_wall:
         id: 1
         bounds: [[0.048,0,0],[0.052,0.1,0.04]]
+     - register_solid_wall:
+        id: 2
+        bounds: [[0.048,0.06, 0],[0.052,0.1,0.1]]
+     - register_solid_wall:
+        id: 3
+        bounds: [[0.048,0,0],[0.052,0.04, 0.1]]
+
+
 
 A high-density region is initialized on the left-hand side using ``set_distribution`` with a coefficient of `1.5`. This creates a **pressure difference** between the left and right sides of the domain, acting as the flow-driving mechanism.
 
@@ -386,6 +394,9 @@ The **post-streaming boundary condition** is the standard `post_bounce_back`.
 
 The goal of this setup is to observe how a **sharp pressure gradient** (from the initialized distribution) drives flow across the domain.
 
+
+.. image:: ../_static/pressure.png
+   :align: center
 
 .. image:: ../_static/pressure.gif
    :align: center
