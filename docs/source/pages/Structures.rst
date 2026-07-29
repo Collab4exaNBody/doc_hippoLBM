@@ -347,4 +347,4 @@ The table below lists all major structures exchanged between operators through t
      - LBM simulation parameters computed by ``lbm_parameters``: ``tau_``, ``nu_``, ``dtLB_``, ``celerity_``, ``Fext_``, ``avg_rho_``
    * - ``Obstacles``
      - ``obstacles``
-     - Collection of registered solid shapes (``Ball``, ``Wall``, ``Quadric``) used to mark obstacle nodes in ``LBMFields::obst_``
+     - Collection of registered solid shapes (``Ball``, ``Wall``, ``Quadric``, ``RShape``) used to mark obstacle nodes in ``LBMFields::obst_``

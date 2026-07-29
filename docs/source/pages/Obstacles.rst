@@ -96,3 +96,34 @@ YAML example:
 .. image:: ../_static/quadrics.png
    :align: center
    :width: 80%
+
+STL Mesh (RShape)
+^^^^^^^^^^^^^^^^^
+
+- Operator Name: ``register_rshape``
+- Description: Loads an arbitrary triangulated surface from an STL file (binary or ASCII) and registers it as a solid obstacle. The mesh is first scaled, then rotated (via a quaternion), then translated. A Minkowski radius can be specified to add a uniform offset around the surface, rounding sharp edges.
+- Parameters:
+
+  - ``id``: Unique integer identifier for this obstacle.
+  - ``filename``: Path to the STL file (binary or ASCII).
+  - ``center`` *(optional)*: Translation applied after scaling and rotation ``[tx, ty, tz]`` (default: ``[0, 0, 0]``).
+  - ``scale`` *(optional)*: Uniform scale factor applied before rotation (default: ``1.0``).
+  - ``orientation`` *(optional)*: Rotation as a quaternion ``[w, x, y, z]`` applied after scaling (default: identity ``[1, 0, 0, 0]``).
+  - ``minkowski`` *(optional)*: Rounding radius — a point is inside the obstacle if it lies within this distance of any face (default: ``0.0``).
+
+.. note::
+
+   Transform order is: **scale → rotate → translate**. STL coordinates are in physical units.
+
+YAML example:
+
+.. code-block:: yaml
+
+   set_obstacles:
+     - register_rshape:
+        id: 0
+        filename: "my_shape.stl"
+        center:      [0.15, 0.05, 0.05]
+        scale:       0.01
+        orientation: [1, 0, 0, 0]   # identity [w,x,y,z]
+        minkowski:   0.001
