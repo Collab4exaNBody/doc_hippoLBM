@@ -128,7 +128,6 @@ Run CMake to configure the HippoLBM build from inside ``build-hippoLBM/``:
 
          cmake ../hippoLBM -DCMAKE_BUILD_TYPE=Release
          make -j 4
-         source bin/setup-env.sh   # must be run from build-hippoLBM/
 
    .. tab:: GPU
 
@@ -138,7 +137,6 @@ Run CMake to configure the HippoLBM build from inside ``build-hippoLBM/``:
 
          cmake ../hippoLBM -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=86
          make -j 4
-         source bin/setup-env.sh   # must be run from build-hippoLBM/
 
 
 Launch examples / ctest
@@ -196,7 +194,6 @@ You can also add hippoLBM to your bashrc by adding an alias (please replace YOUR
 .. code-block:: bash
 
   vi ~/.bashrc
-  source ~/YOURDIR/build/bin/setup-env.sh
   alias hippoLBM='~/YOURDIR/build/hippoLBM'
 
 Or just on your local environment:
