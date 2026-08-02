@@ -485,6 +485,108 @@ A **high-density initialization** is imposed on the far left of the domain using
    :align: center
 
 
+Flow Around the Eiffel Tower
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This example illustrates the use of ``register_rshape`` to import a real STL mesh — a 300 m scale model of the Eiffel Tower — as a solid obstacle. The simulation is not driven by an external force; instead a spherical pressure perturbation is initialized above the tower using ``set_distribution``, and the resulting acoustic wave propagates through the domain. Two boundary condition variants are provided: one with wall boundaries on all lateral faces, one with periodic boundaries in X and Y.
+
+The domain spans 0.6 m × 0.6 m × 2.0 m (height along Z) with a resolution of 240×240×800 nodes:
+
+.. code-block:: yaml
+
+   do_domain:
+     - domain:
+        bounds:    [ [0,0,0], [0.6 m, 0.6 m, 2.0 m] ]
+        cell_dims: [ 240, 240, 800 ]
+        periodic:  [ true, true, false ]   # false, false, false for the null-BCs variant
+
+The LBM parameters use a kinematic viscosity of `1e-4 m²/s` and a relaxation time `tau = 0.6`:
+
+.. code-block:: yaml
+
+   set_lbm_parameters:
+     - lbm_parameters:
+        Fext: [0, 0, 0]
+        nuth: 1e-4
+        tau:  0.6
+
+The Eiffel Tower STL mesh is loaded with ``register_rshape``, scaled by a factor of 0.01 (converting the mesh from centimetres to metres), and centered at the base of the domain:
+
+.. code-block:: yaml
+
+   set_obstacles:
+     - register_rshape:
+        id: 0
+        filename: "stl_files/toureiffel.stl"
+        center:      [0.3, 0.3, 0.0]
+        scale:       0.01
+        orientation: [1, 0, 0, 0]
+        minkowski:   0.005
+
+A spherical pressure perturbation (higher density) is initialized above the tower tip at position [0.3, 0.3, 1.5] using ``set_distribution`` with a quadric shape:
+
+.. code-block:: yaml
+
+   set_distributions:
+     - set_distribution:
+        value: 1.2
+        quadrics: sphere
+        transform:
+          - scale:     [0.1, 0.1, 0.1]
+          - translate: [0.3, 0.3, 1.5]
+
+.. warning::
+
+   The ``value`` parameter is applied uniformly to **all** distribution function components :math:`f_i`. This is a raw initialization of the distributions, not a thermodynamically consistent density initialization.
+
+**Periodic variant** — Neumann (zero velocity) on Z boundaries only; X and Y are periodic:
+
+.. code-block:: yaml
+
+   boundary_conditions:
+     - neumann:
+        U: [0, 0, 0]
+        regions: [plan_xy_0, plan_xy_l]
+
+   pre_stream_bcs:
+     - wall_bounce_back
+
+**Wall-BCs variant** — Neumann on Z and stationary lid-driven-cavity conditions on all four lateral faces:
+
+.. code-block:: yaml
+
+   boundary_conditions:
+     - neumann:
+        U: [0, 0, 0]
+        regions: [plan_xy_0, plan_xy_l]
+     - lid_driven_cavity:
+        U: [0, 0, 0]
+        regions: [plan_yz_0, plan_yz_l, plan_xz_0, plan_xz_l]
+
+   pre_stream_bcs:
+     - wall_bounce_back
+
+The initial state (left: wall BCs, right: periodic) shows the spherical pressure perturbation above the tower before it starts propagating:
+
+.. list-table::
+   :widths: 50 50
+
+   * - .. image:: ../_static/eiffeltower.0001.png
+          :width: 100%
+     - .. image:: ../_static/eiffeltower.0002.png
+          :width: 100%
+
+Evolution of the pressure wave (left: wall BCs — wave reflects off lateral walls; right: periodic — wave wraps around):
+
+.. list-table::
+   :widths: 50 50
+
+   * - .. image:: ../_static/toureiffel_bcs_null.gif
+          :width: 100%
+     - .. image:: ../_static/toureiffel_bcs_periodic.gif
+          :width: 100%
+
+
 Cavity Flow [OLD]
 ^^^^^^^^^^^^^^^^^
 
