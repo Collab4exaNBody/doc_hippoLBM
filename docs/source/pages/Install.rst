@@ -106,7 +106,9 @@ To install ``HippoLBM``, follow these steps:
 
    .. code-block:: bash
 
-      export onika_DIR=/path/to/install-onika Clone the ``HippoLBM`` repository using the command:
+      export onika_DIR=/path/to/install-onika
+      
+Clone the ``HippoLBM`` repository using the command:
 
 .. code-block:: bash
 		
