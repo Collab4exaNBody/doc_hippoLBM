@@ -116,6 +116,86 @@ YAML example:
 
   ``asynchrone`` option is disabled.
 
+Utils
+^^^^^
+
+Initialization
+--------------
+
+``set_distribution``
+~~~~~~~~~~~~~~~~~~~~
+
+- Operator name: ``set_distribution``
+- Description: Initializes all distribution function components :math:`f_i` uniformly to a given ``value``. Can be applied to the whole grid, restricted to an axis-aligned bounding box (``bounds``), or restricted to a quadric-defined region (``quadrics`` + optional ``transform``).
+- Parameters:
+
+  - ``value``: Uniform value assigned to every :math:`f_i` component (default: ``1.0``).
+  - ``do_update``: If ``true``, operates on ``Real`` cells only and triggers a ghost-cell update; otherwise applies to all cells including ghost layers (default: ``false``).
+  - ``bounds`` *(optional)*: Restricts initialization to an AABB ``[[xmin,ymin,zmin],[xmax,ymax,zmax]]``.
+  - ``quadrics`` *(optional)*: Named quadric shape (``sphere``, ``cyly``, …) restricting the initialized region.
+  - ``transform`` *(optional)*: Sequence of ``scale`` / ``translate`` transforms applied to the quadric.
+
+.. warning::
+
+   ``value`` is applied **uniformly to all** :math:`f_i` components — this is not a thermodynamically consistent initialization. Use ``set_dp_pressure`` for a physically meaningful pressure perturbation.
+
+.. code-block:: yaml
+
+   set_distributions:
+     - set_distribution:
+        value: 1.0              # initialize entire grid
+
+     - set_distribution:
+        value: 1.2
+        quadrics: sphere
+        transform:
+          - scale:     [0.1, 0.1, 0.1]
+          - translate: [0.3, 0.3, 1.5]
+
+``set_dp_pressure``
+~~~~~~~~~~~~~~~~~~~
+
+- Operator name: ``set_dp_pressure``
+- Description: Initializes a pressure perturbation :math:`\Delta p` (in Pa) relative to the fluid's reference state (:math:`\rho_\text{LBM} = 1`, i.e. ``avg_rho``). Unlike ``set_distribution``, :math:`\Delta p = 0` always leaves the fluid unperturbed regardless of ``dtLB``. The physical pressure is converted to an LBM density via the isothermal equation of state (:math:`p = c_s^2 \rho`, :math:`c_s^2 = 1/3`):
+
+  .. math::
+
+     \Delta p_\text{LBM} = \Delta p \cdot \frac{\Delta t^2}{\rho_\text{ref} \cdot \Delta x^2}, \qquad \rho_\text{LBM} = 1 + 3\,\Delta p_\text{LBM}
+
+- Parameters:
+
+  - ``delta_p`` *(required)*: Pressure difference in Pa relative to the reference state.
+  - ``bounds`` *(optional)*: Restricts initialization to an AABB.
+  - ``quadrics`` *(optional)*: Named quadric shape restricting the initialized region.
+  - ``transform`` *(optional)*: Sequence of ``scale`` / ``translate`` transforms applied to the quadric.
+  - ``verbosity``: If ``true``, prints the converted LBM density to the log (default: ``false``).
+
+.. code-block:: yaml
+
+   set_pressures:
+     - set_dp_pressure:
+        delta_p: 1.0e6          # 1 MPa perturbation
+        quadrics: sphere
+        transform:
+          - scale:     [0.15, 0.15, 0.15]
+          - translate: [1.0,  1.0,  1.0 ]
+        verbosity: true
+
+   set_distributions:
+     - set_distribution:
+        value: 1.0
+     - set_pressures
+
+The figure below shows the result of a 1 MPa spherical pressure perturbation expanding in a fully periodic water cube:
+
+.. list-table::
+   :widths: 60 40
+
+   * - .. image:: ../_static/dp_pressure_sphere.png
+          :width: 100%
+     - .. image:: ../_static/dp_pressure_sphere.gif
+          :width: 100%
+
 Checkers
 ^^^^^^^^
 
