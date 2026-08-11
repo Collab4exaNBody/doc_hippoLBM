@@ -4,34 +4,54 @@ Examples
 Poiseuille Flow
 ^^^^^^^^^^^^^^^
 
-We define the simulation domain for the Lattice Boltzmann Method (LBM). In this example, we choose a resolution of 30×30×30. Periodic boundary conditions are applied along the XX and YY axes, while the ZZ axis remains non-periodic.
+This example simulates a fully-developed Poiseuille flow in a 30×30×30 domain. Two equivalent setups are available, differing only in how the flow is driven: by a **body force** (``Fext``) or by a **pressure difference** (``rho`` BCs). Both produce the same velocity profile along Z.
 
-.. code-block:: yaml
+The domain has non-periodic boundaries along Z (the no-slip walls). In the body-force variant the domain is fully periodic along X and Y; in the pressure-driven variant X is non-periodic to host the inlet/outlet pressure planes:
 
-   do_domain:
-     - domain:
-        bounds:    [ [0,0,0] , [0.1,0.1,0.1] ]
-        cell_dims: [ 30 , 30 , 30 ]
-        periodic:  [ true, true, false ]
+.. tabs::
 
-We apply a Neumann boundary condition on both Z boundaries at once, via the ``regions`` parameter (setting to `(ux = 0, uy = 0, uz = 0)`):
+   .. tab:: Body force (Fext)
 
-.. code-block:: yaml
+      .. code-block:: yaml
 
-   boundary_conditions:
-     - neumann:
-        U: [0.0,0,0]
-        regions: [plan_xy_0, plan_xy_l]
+         do_domain:
+           - domain:
+              bounds:    [ [0,0,0], [0.1,0.1,0.1] ]
+              cell_dims: [ 30, 30, 30 ]
+              periodic:  [ true, true, false ]
 
+         set_lbm_parameters:
+           - lbm_parameters:
+              Fext: [9.512485e-05, 0.0, 0.0]
+              nuth: 1e-3
 
-An external force of `(9.512485×10−5,0.0,0.0)` is applied to drive the flow. The kinematic viscosity is set to `1e−3`, and the average density is assumed to be `1000`.
+         boundary_conditions:
+           - neumann:
+              U: [0.0, 0, 0]
+              regions: [plan_xy_0, plan_xy_l]
 
-.. code-block:: yaml
+   .. tab:: Pressure-driven (rho)
 
-   set_lbm_parameters:
-     - lbm_parameters:
-        Fext: [9.512485e-05,0.000000e+00,0.000000e+00]
-        nuth: 1e-3
+      .. code-block:: yaml
+
+         do_domain:
+           - domain:
+              bounds:    [ [0,0,0], [0.1,0.1,0.1] ]
+              cell_dims: [ 30, 30, 30 ]
+              periodic:  [ false, true, false ]
+
+         set_lbm_parameters:
+           - lbm_parameters:
+              nuth: 1e-3
+
+         boundary_conditions:
+           - neumann:
+              U: [0.0, 0, 0]
+              regions: [plan_xy_0, plan_xy_l]
+           - rho:
+              U: [0.0, 0, 0]
+              regions: [plan_yz_0, plan_yz_l]
+              delta_p: [4.756243e-03 kg/m/s^2, -4.756243e-03 kg/m/s^2]
 
 A ``plot_line_velocity`` analysis operator samples the velocity along a line probe at the center of the domain every 300 iterations. A ``plane_velocity_profile`` checker also exports the average Z profile:
 
@@ -50,7 +70,7 @@ A ``plot_line_velocity`` analysis operator samples the velocity along a line pro
       simulation_analysis_freq: 300
       simulation_end_iteration: 3000
 
-The expected results should show the development of a fully developed Poiseuille flow profile along the Z axis, with velocity increasing towards the center and decreasing near the boundaries due to the imposed Neumann conditions.
+The expected results show a fully-developed Poiseuille profile along Z, with maximum velocity at the center and zero at the walls.
 
 .. image:: ../_static/lbmpoiseuille.gif
    :align: center
@@ -61,9 +81,15 @@ The velocity profile along Z, compared against the analytical transient Poiseuil
 
    python3 ../hippoLBM/script/profile/plot_line_poiseuille.py PoiseuilleTestDir/Profile
 
-.. image:: ../_static/poiseuille_profile_0000003001_velocity_bounds.png
-   :align: center
-   :width: 60%
+Both variants yield identical profiles (left: ``Fext``; right: ``rho``):
+
+.. list-table::
+   :widths: 50 50
+
+   * - .. image:: ../_static/poiseuille_profile_0000003001_velocity_bounds.png
+          :width: 100%
+     - .. image:: ../_static/line_poiseuille.png
+          :width: 100%
 
 Couette Flow
 ^^^^^^^^^^^^
@@ -488,29 +514,9 @@ A **high-density initialization** is imposed on the far left of the domain using
 Flow Around the Eiffel Tower
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This example illustrates the use of ``register_rshape`` to import a real STL mesh — a 300 m scale model of the Eiffel Tower — as a solid obstacle. The simulation is not driven by an external force; instead a spherical pressure perturbation is initialized above the tower using ``set_distribution``, and the resulting acoustic wave propagates through the domain. Two boundary condition variants are provided: one with wall boundaries on all lateral faces, one with periodic boundaries in X and Y.
+These examples illustrate the use of ``register_rshape`` to project a real STL mesh — a 300 m scale model of the Eiffel Tower — onto the LBM grid. They are primarily **validation cases** to verify that the ``RShape`` projection works correctly with various boundary condition strategies, rather than physically tuned simulations.
 
-The domain spans 0.6 m × 0.6 m × 2.0 m (height along Z) with a resolution of 240×240×800 nodes:
-
-.. code-block:: yaml
-
-   do_domain:
-     - domain:
-        bounds:    [ [0,0,0], [0.6 m, 0.6 m, 2.0 m] ]
-        cell_dims: [ 240, 240, 800 ]
-        periodic:  [ true, true, false ]   # false, false, false for the null-BCs variant
-
-The LBM parameters use a kinematic viscosity of `1e-4 m²/s` and a relaxation time `tau = 0.6`:
-
-.. code-block:: yaml
-
-   set_lbm_parameters:
-     - lbm_parameters:
-        Fext: [0, 0, 0]
-        nuth: 1e-4
-        tau:  0.6
-
-The Eiffel Tower STL mesh is loaded with ``register_rshape``, scaled by a factor of 0.01 (converting the mesh from centimetres to metres), and centered at the base of the domain:
+Three variants are provided, all sharing the same obstacle definition. The Eiffel Tower STL mesh is loaded, scaled by 0.01 (centimetres → metres), and centered at the base of the domain:
 
 .. code-block:: yaml
 
@@ -523,7 +529,12 @@ The Eiffel Tower STL mesh is loaded with ``register_rshape``, scaled by a factor
         orientation: [1, 0, 0, 0]
         minkowski:   0.005
 
-A spherical pressure perturbation (higher density) is initialized above the tower tip at position [0.3, 0.3, 1.5] using ``set_distribution`` with a quadric shape:
+   pre_stream_bcs:
+     - wall_bounce_back
+
+**Variants 1 & 2 — Acoustic wave propagation** (domain 0.6×0.6×2.0 m, 240×240×800):
+
+A spherical pressure perturbation is initialized above the tower tip with ``set_distribution``, and the resulting acoustic wave is observed under two lateral boundary conditions:
 
 .. code-block:: yaml
 
@@ -537,36 +548,44 @@ A spherical pressure perturbation (higher density) is initialized above the towe
 
 .. warning::
 
-   The ``value`` parameter is applied uniformly to **all** distribution function components :math:`f_i`. This is a raw initialization of the distributions, not a thermodynamically consistent density initialization.
+   ``value`` is applied uniformly to **all** :math:`f_i` components — not a thermodynamically consistent initialization.
 
-**Periodic variant** — Neumann (zero velocity) on Z boundaries only; X and Y are periodic:
+.. tabs::
 
-.. code-block:: yaml
+   .. tab:: Periodic (X, Y)
 
-   boundary_conditions:
-     - neumann:
-        U: [0, 0, 0]
-        regions: [plan_xy_0, plan_xy_l]
+      .. code-block:: yaml
 
-   pre_stream_bcs:
-     - wall_bounce_back
+         do_domain:
+           - domain:
+              bounds:    [ [0,0,0], [0.6 m, 0.6 m, 2.0 m] ]
+              cell_dims: [ 240, 240, 800 ]
+              periodic:  [ true, true, false ]
 
-**Wall-BCs variant** — Neumann on Z and stationary lid-driven-cavity conditions on all four lateral faces:
+         boundary_conditions:
+           - neumann:
+              U: [0, 0, 0]
+              regions: [plan_xy_0, plan_xy_l]
 
-.. code-block:: yaml
+   .. tab:: Wall BCs (all lateral faces)
 
-   boundary_conditions:
-     - neumann:
-        U: [0, 0, 0]
-        regions: [plan_xy_0, plan_xy_l]
-     - lid_driven_cavity:
-        U: [0, 0, 0]
-        regions: [plan_yz_0, plan_yz_l, plan_xz_0, plan_xz_l]
+      .. code-block:: yaml
 
-   pre_stream_bcs:
-     - wall_bounce_back
+         do_domain:
+           - domain:
+              bounds:    [ [0,0,0], [0.6 m, 0.6 m, 2.0 m] ]
+              cell_dims: [ 240, 240, 800 ]
+              periodic:  [ false, false, false ]
 
-The initial state (left: wall BCs, right: periodic) shows the spherical pressure perturbation above the tower before it starts propagating:
+         boundary_conditions:
+           - neumann:
+              U: [0, 0, 0]
+              regions: [plan_xy_0, plan_xy_l]
+           - lid_driven_cavity:
+              U: [0, 0, 0]
+              regions: [plan_yz_0, plan_yz_l, plan_xz_0, plan_xz_l]
+
+Initial state (left: wall BCs, right: periodic) and evolution of the pressure wave:
 
 .. list-table::
    :widths: 50 50
@@ -576,8 +595,6 @@ The initial state (left: wall BCs, right: periodic) shows the spherical pressure
      - .. image:: ../_static/eiffeltower.0002.png
           :width: 100%
 
-Evolution of the pressure wave (left: wall BCs — wave reflects off lateral walls; right: periodic — wave wraps around):
-
 .. list-table::
    :widths: 50 50
 
@@ -585,6 +602,47 @@ Evolution of the pressure wave (left: wall BCs — wave reflects off lateral wal
           :width: 100%
      - .. image:: ../_static/toureiffel_bcs_periodic.gif
           :width: 100%
+
+**Variant 3 — Pressure-driven flow** (``rho`` BCs, domain 5.0×0.6×2.0 m, 2000×240×800):
+
+The domain is extended along X to create a proper inlet/outlet configuration. A pressure difference of 50 Pa is prescribed on the X faces to drive the flow past the tower. The tower is placed near the inlet (x = 0.6 m):
+
+.. code-block:: yaml
+
+   do_domain:
+     - domain:
+        bounds:    [ [0,0,0], [5.0 m, 0.6 m, 2.0 m] ]
+        cell_dims: [ 2000, 240, 800 ]
+        periodic:  [ false, true, false ]
+
+   set_lbm_parameters:
+     - lbm_parameters:
+        nuth: 1e-4
+        tau:  0.6
+
+   set_obstacles:
+     - register_rshape:
+        id: 0
+        filename: "toureiffel.stl"
+        center:      [0.6, 0.3, 0.0]
+        scale:       0.01
+        orientation: [1, 0, 0, 0]
+        minkowski:   0.005
+
+   boundary_conditions:
+     - neumann:
+        U: [0, 0, 0]
+        regions: [plan_xy_0, plan_xy_l]
+     - rho:
+        U: [0, 0, 0]
+        regions: [plan_yz_0, plan_yz_l]
+        delta_p: [50 kg/m/s^2, -50 kg/m/s^2]
+
+The sequence below shows the development of vortex shedding in the wake, from the initial state (top-left) to the turbulent regime:
+
+.. image:: ../_static/tour_eiffel_bc_v2.png
+   :align: center
+   :width: 90%
 
 
 Cavity Flow [OLD]

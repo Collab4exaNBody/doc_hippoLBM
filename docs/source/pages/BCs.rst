@@ -279,6 +279,39 @@ YAML example:
        U: [0.1, 0.0, 0]
        regions: [plan_xy_l]
 
+Rho (Density / Pressure)
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``rho`` operator enforces a density — equivalently a pressure — boundary condition on one or several boundary planes. It is the natural way to drive a flow with a pressure difference instead of a body force (``Fext``). The prescribed pressure ``delta_p`` (in Pa, with units) is converted internally to an LBM density using the same convention as ``set_dp_pressure``:
+
+.. math::
+
+   \Delta p_\text{LBM} = \Delta p \cdot \frac{\Delta t^2}{\rho_\text{ref}\,\Delta x^2}, \qquad \rho_\text{LBM} = 1 + 3\,\Delta p_\text{LBM}
+
+- Operator name: ``rho``
+- Parameters:
+
+  - ``delta_p`` *(required)*: List of pressure differences in Pa (one per region), with explicit units (e.g. ``kg/m/s^2``). A positive value increases the density at the boundary; use opposite signs on inlet/outlet to drive a flow.
+  - ``regions`` *(required)*: List of boundary planes. Allowed values: ``plan_xy_0``, ``plan_xy_l``, ``plan_yz_0``, ``plan_yz_l``, ``plan_xz_0``, ``plan_xz_l``.
+  - ``U`` *(optional)*: Prescribed velocity at the boundary (default: ``[0, 0, 0]``).
+
 .. note::
 
-   Obstacle operators (``register_solid_wall``, ``register_solid_ball``, ``register_quadrics``) are documented in the :doc:`Obstacles` page.
+   ``delta_p`` and ``regions`` must have the same length — each pressure value is matched to the corresponding plane in order.
+
+YAML example (pressure-driven Poiseuille along X, equivalent to a body force):
+
+.. code-block:: yaml
+
+   boundary_conditions:
+     - neumann:
+        U: [0.0, 0, 0]
+        regions: [plan_xy_0, plan_xy_l]
+     - rho:
+        U: [0.0, 0, 0]
+        regions: [plan_yz_0, plan_yz_l]
+        delta_p: [4.756243e-03 kg/m/s^2, -4.756243e-03 kg/m/s^2]
+
+.. note::
+
+   Obstacle operators (``register_solid_wall``, ``register_solid_ball``, ``register_quadrics``, ``register_rshape``) are documented in the :doc:`Obstacles` page.
