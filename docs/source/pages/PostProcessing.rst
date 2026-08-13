@@ -25,6 +25,33 @@ ParaView Output
    global:
      simulation_paraview_freq: 500
 
+ParaView Sub-box Output
+-----------------------
+
+- Operator name: ``write_paraview_subbox``
+- Description: Writes a physical-space sub-region of the simulation domain to ParaView-compatible files (one ``.pvtr`` master file and one ``.vtr`` piece per overlapping MPI rank). The output contains the same fields as ``write_paraview`` (density, velocity, obstacle mask) but is restricted to the bounding box specified by ``bounds``. Ranks whose local sub-domain does not overlap ``bounds`` write nothing. The ``distributions`` flag is not supported for sub-box output.
+- Parameters:
+
+  - ``bounds`` *(required)*: physical-space axis-aligned bounding box ``[[xmin,ymin,zmin],[xmax,ymax,zmax]]`` of the region to dump.
+  - ``filename``: base filename pattern, formatted with the current timestep (default: ``hippoLBM_subbox_%010d``).
+  - ``output_directory``: base output directory (default: ``hippoLBMOutputDir``).
+  - ``display_filename``: if ``true``, prints the output filename to the log when writing (default: ``true``).
+
+.. note::
+
+   The ``bounds`` box is automatically clipped to the simulation domain extent. If it falls entirely outside the domain an informational message is printed and nothing is written.
+
+.. code-block:: yaml
+
+   dump_paraview:
+     - write_paraview_subbox:
+        filename:         "hippoLBM_subbox_%010d"
+        bounds: [[0.4, 0.0, 0.0], [0.6, 2.0, 2.0]]
+
+   global:
+     simulation_paraview_freq: 500
+    output_directory: "MySimDir"
+
 Simulation State
 ----------------
 
