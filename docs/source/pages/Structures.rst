@@ -53,6 +53,7 @@ Input slots:
 - ``cell_dims`` *(required)*: number of cells in each dimension — the number of nodes is ``cell_dims + 1``. The grid spacing ``dx`` is computed from ``bounds`` and ``cell_dims``, and must be uniform in all directions.
 - ``bounds`` *(required)*: physical bounding box of the full domain ``[[xmin, ymin, zmin], [xmax, ymax, zmax]]``, with optional unit suffix (e.g. ``m``).
 - ``periodic`` *(required)*: list of three booleans controlling periodicity along X, Y, Z.
+- ``tolerance`` *(optional)*: relative tolerance used to check consistency between resolution, grid size, and bounds (default: ``1e-6``). Increase this if floating-point round-off causes a false alarm when the domain size is not an exact multiple of ``dx``.
 
 .. code-block:: yaml
 
@@ -61,6 +62,7 @@ Input slots:
         bounds:    [ [0,0,0], [0.1,0.1,0.1] ]
         cell_dims: [ 100, 100, 100 ]
         periodic:  [ true, true, false ]
+        tolerance: 1e-6
 
 LBMGrid
 ^^^^^^^
